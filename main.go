@@ -41,6 +41,9 @@ func main() {
 		"aes-cbc", "Encrypt/Decrypt using AES-CBC", cmdAesCbc,
 	})
 	app.Add("AES", Command{
+		"aes-gcm", "Encrypt/Decrypt using AES-GCM", cmdAesGcm,
+	})
+	app.Add("AES", Command{
 		"aes-keywrap", "Wrap/Unwrap using AES-KEYWRAP", cmdAesKeywrap,
 	})
 
@@ -261,7 +264,7 @@ Options:
 func cmdAesCbc(args []string) error {
 	fset := flag.NewFlagSet("aes-cbc", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp aes-cbc [-e/-d] -key/-key-file -iv/-iv-file [-in INPUT] [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp aes-cbc [-e/-d] -key/-key-file -iv [-in INPUT] [-out OUTPUT]
 
 Encrypt/Decrypt INPUT to OUTPUT using AES-CBC.
 
