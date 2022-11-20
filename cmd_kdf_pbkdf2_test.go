@@ -26,6 +26,7 @@ func TestCmdKdfPbkdf2(t *testing.T) {
 		dkLen    int
 		expected []byte
 	}
+	// based on RFC6070
 	tvs := []testvector{
 		{
 			p:        []byte("password"),

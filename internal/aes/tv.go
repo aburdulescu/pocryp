@@ -21,6 +21,7 @@ type GCMTestVector struct {
 	Aad        []byte
 }
 
+// from https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Algorithm-Validation-Program/documents/mac/gcmtestvectors.zip
 var GCMTestVectors = map[string]GCMTestVector{
 	"key128/nonce96/without_aad": GCMTestVector{
 		Key:        bytesFromHex("7fddb57453c241d03efbed3ac44e371c"),
