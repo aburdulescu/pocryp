@@ -23,7 +23,7 @@ import (
 	"strconv"
 	"strings"
 
-	"bandr.me/p/pocryp/internal/aes"
+	poaes "bandr.me/p/pocryp/internal/aes"
 	porsa "bandr.me/p/pocryp/internal/rsa"
 	"golang.org/x/crypto/pbkdf2"
 )
@@ -241,11 +241,11 @@ Options:
 	var output []byte
 	switch {
 	case *fEncrypt:
-		output, err = aes.ECB(key, input.Bytes(), true)
+		output, err = poaes.ECB(key, input.Bytes(), true)
 	case *fDecrypt:
-		output, err = aes.ECB(key, input.Bytes(), false)
+		output, err = poaes.ECB(key, input.Bytes(), false)
 	default:
-		output, err = aes.ECB(key, input.Bytes(), true)
+		output, err = poaes.ECB(key, input.Bytes(), true)
 	}
 	if err != nil {
 		return err
@@ -348,17 +348,17 @@ Options:
 	var c cipher.BlockMode
 	switch {
 	case *fEncrypt:
-		c, err = aes.NewCBCEncrypter(key, iv)
+		c, err = poaes.NewCBCEncrypter(key, iv)
 	case *fDecrypt:
-		c, err = aes.NewCBCDecrypter(key, iv)
+		c, err = poaes.NewCBCDecrypter(key, iv)
 	default:
-		c, err = aes.NewCBCEncrypter(key, iv)
+		c, err = poaes.NewCBCEncrypter(key, iv)
 	}
 	if err != nil {
 		return err
 	}
 
-	output := aes.CBCProcessBlocks(c, input.Bytes())
+	output := poaes.CBCProcessBlocks(c, input.Bytes())
 
 	if _, err := io.Copy(w, bytes.NewBuffer(output)); err != nil {
 		return err
@@ -448,11 +448,11 @@ Options:
 	var err error
 	switch {
 	case *fWrap:
-		output, err = aes.KeyWrap(key, input.Bytes())
+		output, err = poaes.KeyWrap(key, input.Bytes())
 	case *fUnwrap:
-		output, err = aes.KeyUnwrap(key, input.Bytes())
+		output, err = poaes.KeyUnwrap(key, input.Bytes())
 	default:
-		output, err = aes.KeyWrap(key, input.Bytes())
+		output, err = poaes.KeyWrap(key, input.Bytes())
 	}
 	if err != nil {
 		return err
