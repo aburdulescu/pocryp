@@ -5,14 +5,17 @@ import (
 	"crypto/cipher"
 )
 
-func GCMEncypt(key, nonce, in []byte) ([]byte, error) {
+func GCM(key, nonce, in, additionalData []byte, direction bool) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
-	c, err := cipher.NewGCM(block)
+	c, err := cipher.NewGCMWithNonceSize(block, len(nonce))
 	if err != nil {
 		return nil, err
 	}
-	return c.Seal(nil, nonce, in, nil), nil
+	if direction {
+		return c.Seal(nil, nonce, in, additionalData), nil
+	}
+	return c.Open(nil, nonce, in, additionalData)
 }
