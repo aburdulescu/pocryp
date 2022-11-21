@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"encoding/hex"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -32,17 +30,7 @@ func TestCmdAesGcm(t *testing.T) {
 func testCmdAesGcm(t *testing.T, tmp string, direction string, key, nonce, aad, input, expected []byte) {
 	out := filepath.Join(tmp, "out")
 	in := filepath.Join(tmp, "in")
-
-	if err := ioutil.WriteFile(in, input, 0666); err != nil {
-		t.Fatal(err)
-	}
-
-	f, err := os.Create(out)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
-
+	setupInsAndOuts(t, in, out, input)
 	args := []string{
 		direction,
 		"-key", hex.EncodeToString(key),
@@ -50,7 +38,6 @@ func testCmdAesGcm(t *testing.T, tmp string, direction string, key, nonce, aad, 
 		"-in", in,
 		"-out", out,
 	}
-
 	if aad != nil {
 		dstpath := filepath.Join(tmp, "aad")
 		if err := ioutil.WriteFile(dstpath, aad, 0666); err != nil {
@@ -58,19 +45,8 @@ func testCmdAesGcm(t *testing.T, tmp string, direction string, key, nonce, aad, 
 		}
 		args = append(args, "-aad", dstpath)
 	}
-
 	if err := cmdAesGcm(args); err != nil {
 		t.Fatal(err)
 	}
-
-	result, err := ioutil.ReadFile(out)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if !bytes.Equal(expected, result) {
-		t.Log("expected =", hex.EncodeToString(expected))
-		t.Log("result   =", hex.EncodeToString(result))
-		t.Fatal("not equal")
-	}
+	expectFileContent(t, out, expected)
 }

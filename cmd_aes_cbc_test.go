@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"encoding/hex"
-	"io/ioutil"
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -34,17 +31,7 @@ func TestCmdAesCbc(t *testing.T) {
 func testCmdAesCbc(t *testing.T, tmp string, direction string, key, iv, input, expected []byte) {
 	out := filepath.Join(tmp, "out")
 	in := filepath.Join(tmp, "in")
-
-	if err := ioutil.WriteFile(in, input, 0666); err != nil {
-		t.Fatal(err)
-	}
-
-	f, err := os.Create(out)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
-
+	setupInsAndOuts(t, in, out, input)
 	args := []string{
 		direction,
 		"-key", hex.EncodeToString(key),
@@ -52,19 +39,8 @@ func testCmdAesCbc(t *testing.T, tmp string, direction string, key, iv, input, e
 		"-in", in,
 		"-out", out,
 	}
-
 	if err := cmdAesCbc(args); err != nil {
 		t.Fatal(err)
 	}
-
-	result, err := ioutil.ReadFile(out)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if !bytes.Equal(expected, result) {
-		t.Log("expected =", hex.EncodeToString(expected))
-		t.Log("result   =", hex.EncodeToString(result))
-		t.Fatal("not equal")
-	}
+	expectFileContent(t, out, expected)
 }
