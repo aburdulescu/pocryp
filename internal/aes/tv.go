@@ -122,6 +122,7 @@ type KeyWrapTestVector struct {
 	Ciphertext []byte
 }
 
+// based on RFC3394
 var KeyWrapTestVectors = []KeyWrapTestVector{
 	{
 		Name:       "4.1-128DataWith128KEK",

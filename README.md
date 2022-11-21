@@ -12,7 +12,7 @@ Command line utility for cryptographic primitives
 [test vectors](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf)
 - [x] KEYWRAP
 [test vectors](https://www.rfc-editor.org/rfc/rfc3394#section-4)
-- [ ] GCM
+- [x] GCM
 [test vectors](https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Algorithm-Validation-Program/documents/mac/gcmtestvectors.zip)
 - [ ] CTR
 [test vectors](https://www.rfc-editor.org/rfc/rfc3686#section-6)
