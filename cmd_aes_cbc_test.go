@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/hex"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -12,23 +11,27 @@ import (
 	poaes "bandr.me/p/pocryp/internal/aes"
 )
 
-func TestCmdAesEcb(t *testing.T) {
+func TestCmdAesCbc(t *testing.T) {
 	tmp := t.TempDir()
-	for name, tv := range poaes.ECBTestVectors {
-		for i, in := range poaes.AesBlocks {
-			t.Run(fmt.Sprintf("%s-Encrypt-%d", name, i), func(t *testing.T) {
-				testCmdAesEcb(t, tmp, "-e", tv.Key, in, tv.Ciphertexts[i])
-			})
+	for name, tv := range poaes.CBCTestVectors {
+		var plaintext []byte
+		for _, block := range poaes.AesBlocks {
+			plaintext = append(plaintext, block...)
 		}
-		for i, in := range tv.Ciphertexts {
-			t.Run(fmt.Sprintf("%s-Decrypt-%d", name, i), func(t *testing.T) {
-				testCmdAesEcb(t, tmp, "-d", tv.Key, in, poaes.AesBlocks[i])
-			})
+		var ciphertext []byte
+		for _, ct := range tv.Ciphertexts {
+			ciphertext = append(ciphertext, ct...)
 		}
+		t.Run("Encrypt-"+name, func(t *testing.T) {
+			testCmdAesCbc(t, tmp, "-e", tv.Key, poaes.CBCIv, plaintext, ciphertext)
+		})
+		t.Run("Decrypt-"+name, func(t *testing.T) {
+			testCmdAesCbc(t, tmp, "-d", tv.Key, poaes.CBCIv, ciphertext, plaintext)
+		})
 	}
 }
 
-func testCmdAesEcb(t *testing.T, tmp string, direction string, key, input, expected []byte) {
+func testCmdAesCbc(t *testing.T, tmp string, direction string, key, iv, input, expected []byte) {
 	out := filepath.Join(tmp, "out")
 	in := filepath.Join(tmp, "in")
 
@@ -45,11 +48,12 @@ func testCmdAesEcb(t *testing.T, tmp string, direction string, key, input, expec
 	args := []string{
 		direction,
 		"-key", hex.EncodeToString(key),
+		"-iv", hex.EncodeToString(iv),
 		"-in", in,
 		"-out", out,
 	}
 
-	if err := cmdAesEcb(args); err != nil {
+	if err := cmdAesCbc(args); err != nil {
 		t.Fatal(err)
 	}
 

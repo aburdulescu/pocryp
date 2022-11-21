@@ -11,7 +11,7 @@ import (
 
 func TestECB(t *testing.T) {
 	for tname, tvector := range ECBTestVectors {
-		for i, in := range ECBBlocks {
+		for i, in := range AesBlocks {
 			t.Run(fmt.Sprintf("%s-Encrypt-%d", tname, i), func(t *testing.T) {
 				out, err := ECB(tvector.Key, in, true)
 				if err != nil {
@@ -30,8 +30,8 @@ func TestECB(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				if !bytes.Equal(out, ECBBlocks[i]) {
-					t.Log(hex.EncodeToString(ECBBlocks[i]))
+				if !bytes.Equal(out, AesBlocks[i]) {
+					t.Log(hex.EncodeToString(AesBlocks[i]))
 					t.Log(hex.EncodeToString(out))
 					t.Fatal("not equal")
 				}

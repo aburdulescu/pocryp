@@ -40,21 +40,21 @@ var GCMTestVectors = map[string]GCMTestVector{
 	},
 }
 
-type ECBTestVector struct {
+type AesTestVector struct {
 	Key         []byte
 	Ciphertexts [][]byte
 }
 
 // Based on NIST SP 800-38A
-var ECBBlocks = [][]byte{
+var AesBlocks = [][]byte{
 	bytesFromHex("6bc1bee22e409f96e93d7e117393172a"),
 	bytesFromHex("ae2d8a571e03ac9c9eb76fac45af8e51"),
 	bytesFromHex("30c81c46a35ce411e5fbc1191a0a52ef"),
 	bytesFromHex("f69f2445df4f9b17ad2b417be66c3710"),
 }
 
-var ECBTestVectors = map[string]ECBTestVector{
-	"128": ECBTestVector{
+var ECBTestVectors = map[string]AesTestVector{
+	"128": AesTestVector{
 		Key: bytesFromHex("2b7e151628aed2a6abf7158809cf4f3c"),
 		Ciphertexts: [][]byte{
 			bytesFromHex("3ad77bb40d7a3660a89ecaf32466ef97"),
@@ -63,7 +63,7 @@ var ECBTestVectors = map[string]ECBTestVector{
 			bytesFromHex("7b0c785e27e8ad3f8223207104725dd4"),
 		},
 	},
-	"192": ECBTestVector{
+	"192": AesTestVector{
 		Key: bytesFromHex("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"),
 		Ciphertexts: [][]byte{
 			bytesFromHex("bd334f1d6e45f25ff712a214571fa5cc"),
@@ -72,13 +72,45 @@ var ECBTestVectors = map[string]ECBTestVector{
 			bytesFromHex("9a4b41ba738d6c72fb16691603c18e0e"),
 		},
 	},
-	"256": ECBTestVector{
+	"256": AesTestVector{
 		Key: bytesFromHex("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"),
 		Ciphertexts: [][]byte{
 			bytesFromHex("f3eed1bdb5d2a03c064b5a7e3db181f8"),
 			bytesFromHex("591ccb10d410ed26dc5ba74a31362870"),
 			bytesFromHex("b6ed21b99ca6f4f9f153e7b1beafed1d"),
 			bytesFromHex("23304b7a39f9f3ff067d8d8f9e24ecc7"),
+		},
+	},
+}
+
+var CBCIv = bytesFromHex("000102030405060708090a0b0c0d0e0f")
+
+var CBCTestVectors = map[string]AesTestVector{
+	"128": AesTestVector{
+		Key: bytesFromHex("2b7e151628aed2a6abf7158809cf4f3c"),
+		Ciphertexts: [][]byte{
+			bytesFromHex("7649abac8119b246cee98e9b12e9197d"),
+			bytesFromHex("5086cb9b507219ee95db113a917678b2"),
+			bytesFromHex("73bed6b8e3c1743b7116e69e22229516"),
+			bytesFromHex("3ff1caa1681fac09120eca307586e1a7"),
+		},
+	},
+	"192": AesTestVector{
+		Key: bytesFromHex("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"),
+		Ciphertexts: [][]byte{
+			bytesFromHex("4f021db243bc633d7178183a9fa071e8"),
+			bytesFromHex("b4d9ada9ad7dedf4e5e738763f69145a"),
+			bytesFromHex("571b242012fb7ae07fa9baac3df102e0"),
+			bytesFromHex("08b0e27988598881d920a9e64f5615cd"),
+		},
+	},
+	"256": AesTestVector{
+		Key: bytesFromHex("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"),
+		Ciphertexts: [][]byte{
+			bytesFromHex("f58c4c04d6e5f1ba779eabfb5f7bfbd6"),
+			bytesFromHex("9cfc4e967edb808d679f777bc6702c7d"),
+			bytesFromHex("39f23369a9d9bacfa530e26304231461"),
+			bytesFromHex("b2eb05e2c39be9fcda6c19078c6a9d1b"),
 		},
 	},
 }
