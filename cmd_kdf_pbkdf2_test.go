@@ -81,4 +81,29 @@ func TestCmdKdfPbkdf2(t *testing.T) {
 			}
 		})
 	}
+	t.Run("NoKey", func(t *testing.T) {
+		if err := cmdKdfPbkdf2(nil); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	t.Run("KeyAsHexAndFromFile", func(t *testing.T) {
+		if err := cmdKdfPbkdf2([]string{"-key=0011", "-key-file=foo"}); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	t.Run("NoSalt", func(t *testing.T) {
+		if err := cmdKdfPbkdf2([]string{"-key=0011"}); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	t.Run("SaltAsHexAndFromFile", func(t *testing.T) {
+		if err := cmdKdfPbkdf2([]string{"-key=0011", "-salt=0011", "-salt-file=foo"}); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	t.Run("InvalidHashFunc", func(t *testing.T) {
+		if err := cmdKdfPbkdf2([]string{"-key=0011", "-salt=0011", "-hash=foo"}); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
 }
