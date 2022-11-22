@@ -10,6 +10,17 @@ import (
 )
 
 func TestECB(t *testing.T) {
+	t.Run("InvalidKey", func(t *testing.T) {
+		if _, err := ECB([]byte{0}, nil, true); err == nil {
+			t.Fatal("expected an error")
+		}
+	})
+	t.Run("InvalidInput", func(t *testing.T) {
+		dummyKey := []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+		if _, err := ECB(dummyKey, []byte{0}, true); err == nil {
+			t.Fatal("expected an error")
+		}
+	})
 	for tname, tvector := range ECBTestVectors {
 		for i, in := range AesBlocks {
 			t.Run(fmt.Sprintf("%s-Encrypt-%d", tname, i), func(t *testing.T) {

@@ -11,6 +11,16 @@ import (
 
 // Based on NIST SP 800-38A
 func TestCBC(t *testing.T) {
+	t.Run("EncrypterInvalidKey", func(t *testing.T) {
+		if _, err := NewCBCEncrypter([]byte{0}, nil); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	t.Run("DecrypterInvalidKey", func(t *testing.T) {
+		if _, err := NewCBCDecrypter([]byte{0}, nil); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
 	for tname, tvector := range CBCTestVectors {
 		enc, err := NewCBCEncrypter(tvector.Key, CBCIv)
 		if err != nil {

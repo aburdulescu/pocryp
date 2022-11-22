@@ -24,6 +24,23 @@ func BenchmarkAesKeyWrap(b *testing.B) {
 }
 
 func TestAesKeyWrap(t *testing.T) {
+	t.Run("WrapInvalidPlaintext", func(t *testing.T) {
+		if _, err := KeyWrap(nil, []byte{0}); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	t.Run("WrapInvalidKey", func(t *testing.T) {
+		plaintext := []byte{0, 1, 2, 3, 4, 5, 6, 7}
+		if _, err := KeyWrap([]byte{0}, plaintext); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	t.Run("UnwrapInvalidKey", func(t *testing.T) {
+		plaintext := []byte{0, 1, 2, 3, 4, 5, 6, 7}
+		if _, err := KeyUnwrap([]byte{0}, plaintext); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
 	for _, v := range KeyWrapTestVectors {
 		t.Run(v.Name, func(t *testing.T) {
 			actualCiphertext, err := KeyWrap(v.Kek, v.Plaintext)

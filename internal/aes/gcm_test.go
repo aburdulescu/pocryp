@@ -7,6 +7,17 @@ import (
 )
 
 func TestGCM(t *testing.T) {
+	t.Run("InvalidKey", func(t *testing.T) {
+		if _, err := GCM([]byte{0}, nil, nil, nil, true); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	t.Run("InvalidNonce", func(t *testing.T) {
+		dummyKey := []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+		if _, err := GCM(dummyKey, nil, nil, nil, true); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
 	for name, tv := range GCMTestVectors {
 		t.Run("Encrypt/"+name, func(t *testing.T) {
 			out, err := GCM(tv.Key, tv.Nonce, tv.Plaintext, tv.Aad, true)
