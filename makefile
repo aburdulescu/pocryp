@@ -9,8 +9,7 @@ vet:
 	go vet
 
 test:
-	go test -race -cover ./...
+	go test -race -coverprofile=cov.out ./...
 
-coverage:
-	go test -coverprofile=cov.out ./...
+coverage: test
 	go tool cover -html cov.out -o cov.html
