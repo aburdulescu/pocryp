@@ -18,3 +18,5 @@ tvs/
 pocryp
 cov.out
 cov.html
+
+dist/
