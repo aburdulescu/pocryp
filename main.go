@@ -66,6 +66,8 @@ func main() {
 		"kdf-pbkdf2", "", cmdKdfPbkdf2,
 	})
 
+	flag.Usage = app.Usage
+
 	flag.Parse()
 
 	if err := app.Run(flag.Args()); err != nil {
