@@ -49,6 +49,10 @@ func main() {
 		"kdf-pbkdf2", "", cmdKdfPbkdf2,
 	})
 
+	app.Add("HASH", Command{
+		"hash-sha", "", cmdHashSha,
+	})
+
 	flag.Usage = app.Usage
 
 	flag.Parse()

@@ -21,9 +21,9 @@
 - [x] raw <-> PKCS#1 ASN.1 DER
 - [x] PEM <-> PKCS#1 ASN.1 DER
 
-# SHA
+# HASH
 
-tbd
+- [x] SHA(1, 224, 256, 384, 512)
 
 # KDF
 
