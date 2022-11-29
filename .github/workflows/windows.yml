@@ -22,10 +22,10 @@ jobs:
 
     - name: amd64
       run: |
-        set GOARCH=amd64
+        go env -w GOARCH=amd64
         make
 
     - name: 386
       run: |
-        set GOARCH=386
+        go env -w GOARCH=386
         make
