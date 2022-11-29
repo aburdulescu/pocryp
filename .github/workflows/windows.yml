@@ -17,11 +17,13 @@ jobs:
       with:
         go-version: 1.19.x
 
+    - name: Disable cgo
+      run: go env -w CGO_ENABLED=0
+
     - name: amd64
-      run: CGO_ENABLED=0 GOARCH=amd64 make
+      run: make
 
     - name: 386
-      run: CGO_ENABLED=0 GOARCH=386 make
-
-    - name: arm64
-      run: CGO_ENABLED=0 GOARCH=arm64 make
+      run: |
+        set GOARCH=386
+        make
