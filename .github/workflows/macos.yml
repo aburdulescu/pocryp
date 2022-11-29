@@ -1,4 +1,4 @@
-name: Linux
+name: MacOS
 
 on:
   push:
@@ -22,6 +22,3 @@ jobs:
 
     - name: amd64
       run: GOARCH=amd64 make
-
-    - name: arm64
-      run: GOARCH=arm64 make
