@@ -1,4 +1,7 @@
-all: verify build vet test
+all: env verify build vet test
+
+env:
+	go env
 
 verify:
 	go mod verify
