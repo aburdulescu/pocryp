@@ -4,13 +4,11 @@ import (
 	"bytes"
 	"encoding/hex"
 	"testing"
-
-	"bandr.me/p/pocryp/internal/testutil"
 )
 
 func BenchmarkAesKeyWrap(b *testing.B) {
-	kek := testutil.BytesFromHex(b, "000102030405060708090A0B0C0D0E0F")
-	data := testutil.BytesFromHex(b, "00112233445566778899AABBCCDDEEFF")
+	kek := bytesFromHexT(b, "000102030405060708090A0B0C0D0E0F")
+	data := bytesFromHexT(b, "00112233445566778899AABBCCDDEEFF")
 	for i := 0; i < b.N; i++ {
 		out, err := KeyWrap(kek, data)
 		if err != nil {

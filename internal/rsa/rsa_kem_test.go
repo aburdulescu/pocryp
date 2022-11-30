@@ -5,18 +5,16 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"testing"
-
-	"bandr.me/p/pocryp/internal/testutil"
 )
 
 func TestRsaKemEncapsulate(t *testing.T) {
 	k := []byte("yellow submarine")
 
-	privateKey, err := PrivateKeyFromPem(testutil.ReadFile(t, "testdata/rsa2048_private_key.pem"))
+	privateKey, err := PrivateKeyFromPem(readFile(t, "testdata/rsa2048_private_key.pem"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	publicKey, err := PublicKeyFromPem(testutil.ReadFile(t, "testdata/rsa2048_public_key.pem"))
+	publicKey, err := PublicKeyFromPem(readFile(t, "testdata/rsa2048_public_key.pem"))
 	if err != nil {
 		t.Fatal(err)
 	}
