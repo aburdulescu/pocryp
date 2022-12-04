@@ -20,3 +20,8 @@ If you have `go` installed, run:
 ```
 go install bandr.me/p/pocryp@latest
 ```
+
+## Usage
+
+Run `./pocryp -h` to see available commands,
+then `./pocryp command -h` to see usage instructions for that command.

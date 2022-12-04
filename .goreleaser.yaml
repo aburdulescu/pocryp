@@ -17,7 +17,12 @@ builds:
       - amd64
       - 386
 archives:
-  - replacements:
+  -
+    wrap_in_directory: true
+    format_overrides:
+      - goos: windows
+        format: zip
+    replacements:
       darwin: Darwin
       linux: Linux
       windows: Windows
