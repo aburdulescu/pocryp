@@ -17,9 +17,6 @@ jobs:
       with:
         go-version: 1.19.x
 
-    - name: Install qemu-user-static
-      run: sudo apt-get install -y qemu-user-static
-
     - name: Disable cgo
       run: go env -w CGO_ENABLED=0
 
@@ -28,6 +25,3 @@ jobs:
 
     - name: 386
       run: GOARCH=386 make
-
-    - name: arm64
-      run: GOARCH=arm64 make
