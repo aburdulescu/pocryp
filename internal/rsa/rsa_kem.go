@@ -4,8 +4,8 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"errors"
+	"fmt"
 	"hash"
-	"log"
 	"math/big"
 
 	"bandr.me/p/pocryp/internal/aes"
@@ -78,8 +78,7 @@ func KemDecapsulate(privKey *rsa.PrivateKey, EK []byte, kdfParams KDFParams) ([]
 	nLen := util.BitLenToByteLen(privKey.N.BitLen())
 
 	if len(EK) < nLen {
-		log.Println("len(EK) < nLen")
-		return nil, errors.New("decryption error")
+		return nil, errors.New("decryption error: len(EK) < nLen")
 	}
 
 	// C || WK = EK
@@ -90,12 +89,10 @@ func KemDecapsulate(privKey *rsa.PrivateKey, EK []byte, kdfParams KDFParams) ([]
 	c := new(big.Int)
 	c.SetBytes(C)
 	if zero := big.NewInt(0); c.Cmp(zero) < 0 {
-		log.Println("c < 0")
-		return nil, errors.New("decryption error")
+		return nil, errors.New("decryption error: c < 0")
 	}
 	if c.Cmp(privKey.N) >= 0 {
-		log.Println("c >= n")
-		return nil, errors.New("decryption error")
+		return nil, errors.New("decryption error: c >= n")
 	}
 
 	// z = c^d mod n
@@ -111,7 +108,7 @@ func KemDecapsulate(privKey *rsa.PrivateKey, EK []byte, kdfParams KDFParams) ([]
 	// K = Unwrap (KEK, WK)
 	K, err := aes.KeyUnwrap(KEK, WK)
 	if err != nil {
-		return nil, errors.New("decryption error")
+		return nil, fmt.Errorf("decryption error: unwrap: %v", err)
 	}
 
 	return K, nil
