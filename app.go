@@ -1,8 +1,10 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
+	"runtime/debug"
 	"sort"
 	"strings"
 )
@@ -20,15 +22,60 @@ type Category struct {
 
 type App struct {
 	categories []Category
+
+	printVersion bool
 }
 
-func (a App) Run(args []string) error {
+func printAppVersion() {
+	bi, _ := debug.ReadBuildInfo()
+	valOf := func(k string) string {
+		for _, v := range bi.Settings {
+			if v.Key == k {
+				return v.Value
+			}
+		}
+		return ""
+	}
+	fmt.Println(
+		bi.Main.Version,
+		bi.GoVersion,
+		valOf("GOOS"),
+		valOf("GOARCH"),
+		valOf("vcs.revision"),
+		valOf("vcs.time"),
+	)
+}
+
+func (a *App) Run(args []string) error {
+	fset := flag.NewFlagSet("pocryp", flag.ContinueOnError)
+	fset.Usage = a.Usage
+	fset.BoolVar(&a.printVersion, "version", false, "")
+	fset.Parse(args)
+
+	args = fset.Args()
+
+	if a.printVersion {
+		printAppVersion()
+		return nil
+	}
+
 	if len(args) == 0 {
 		a.Usage()
 		return nil
 	}
+
 	name := args[0]
 	args = args[1:]
+
+	switch {
+	case name == "version":
+		printAppVersion()
+		return nil
+	case name == "help":
+		a.Usage()
+		return nil
+	}
+
 	for _, category := range a.categories {
 		for _, cmd := range category.commands {
 			if cmd.name == name {
@@ -36,6 +83,7 @@ func (a App) Run(args []string) error {
 			}
 		}
 	}
+
 	return fmt.Errorf("unknown command '%s'", name)
 }
 
@@ -73,7 +121,17 @@ func (a App) maxCommandName(category string) int {
 
 func (a App) Usage() {
 	w := os.Stderr
-	fmt.Fprint(w, "Usage: pocryp command [ARGS]\n\nCommands:\n\n")
+	fmt.Fprint(w, `Usage: pocryp command [ARGS]
+
+Flags:
+  -h,--help  Print this message
+  --version  Print version information
+
+Commands:
+  help     Print this message
+  version  Print version information
+
+`)
 	for _, v := range a.categories {
 		fmt.Fprintf(w, "%s:\n", v.name)
 		mlen := a.maxCommandName(v.name)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 )
@@ -53,11 +52,7 @@ func main() {
 		"hash-sha", "", cmdHashSha,
 	})
 
-	flag.Usage = app.Usage
-
-	flag.Parse()
-
-	if err := app.Run(flag.Args()); err != nil {
+	if err := app.Run(os.Args); err != nil {
 		die("%v", err)
 	}
 }
