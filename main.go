@@ -52,7 +52,7 @@ func main() {
 		"hash-sha", "", cmdHashSha,
 	})
 
-	if err := app.Run(os.Args); err != nil {
+	if err := app.Run(os.Args[1:]); err != nil {
 		die("%v", err)
 	}
 }

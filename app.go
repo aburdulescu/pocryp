@@ -47,7 +47,7 @@ func printAppVersion() {
 }
 
 func (a *App) Run(args []string) error {
-	fset := flag.NewFlagSet("pocryp", flag.ContinueOnError)
+	fset := flag.NewFlagSet("pocryp", flag.ExitOnError)
 	fset.Usage = a.Usage
 	fset.BoolVar(&a.printVersion, "version", false, "")
 	fset.Parse(args)
