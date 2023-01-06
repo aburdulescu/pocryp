@@ -21,4 +21,4 @@ jobs:
       run: go env -w CGO_ENABLED=0
 
     - name: amd64
-      run: GOARCH=amd64 make
+      run: GOARCH=amd64 make ci
