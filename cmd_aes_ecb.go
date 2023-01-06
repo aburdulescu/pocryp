@@ -7,7 +7,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 
 	poaes "bandr.me/p/pocryp/internal/aes"
@@ -36,7 +35,9 @@ Options:
 	fKey := fset.String("key", "", "Key as hex.")
 	fKeyFile := fset.String("key-file", "", "File which contains the key as binary/text.")
 
-	fset.Parse(args)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
 
 	if *fKey == "" && *fKeyFile == "" {
 		return errors.New("no key specified, use -key or -key-file to specify it")
@@ -55,7 +56,7 @@ Options:
 		key = b
 	}
 	if *fKeyFile != "" {
-		b, err := ioutil.ReadFile(*fKeyFile)
+		b, err := os.ReadFile(*fKeyFile)
 		if err != nil {
 			return err
 		}

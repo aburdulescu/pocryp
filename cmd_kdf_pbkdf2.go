@@ -2,16 +2,11 @@ package main
 
 import (
 	"bytes"
-	"crypto/sha1"
-	"crypto/sha256"
-	"crypto/sha512"
 	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
-	"hash"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"golang.org/x/crypto/pbkdf2"
@@ -40,9 +35,15 @@ Options:
 	fSaltFile := fset.String("salt-file", "", "File which contains the salt as binary/text.")
 	fIter := fset.Int("iter", 1024, "Number of iterations.")
 	fLen := fset.Int("len", 128, "Bit-length of the derived key.")
-	fHashFunc := fset.String("hash", "SHA-1", "Hash function(valid options: SHA-1, SHA-224, SHA-256, SHA-384 and SHA-512).")
+	fHashFunc := fset.String(
+		"hash",
+		algSHA256,
+		fmt.Sprintf("Hash function(valid options: %s).", shaAlgs),
+	)
 
-	fset.Parse(args)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
 
 	if *fKey == "" && *fKeyFile == "" {
 		return errors.New("no key specified, use -key or -key-file to specify it")
@@ -58,20 +59,9 @@ Options:
 		return errors.New("cannot use -salt and -salt-file at the same time")
 	}
 
-	var hashFunc func() hash.Hash
-	switch *fHashFunc {
-	case "SHA-1":
-		hashFunc = sha1.New
-	case "SHA-224":
-		hashFunc = sha256.New224
-	case "SHA-256":
-		hashFunc = sha256.New
-	case "SHA-384":
-		hashFunc = sha512.New384
-	case "SHA-512":
-		hashFunc = sha512.New
-	default:
-		return errors.New("hash function is not valid")
+	hashFunc, err := hashFuncFromStr(*fHashFunc)
+	if err != nil {
+		return err
 	}
 
 	var key []byte
@@ -83,7 +73,7 @@ Options:
 		key = b
 	}
 	if *fKeyFile != "" {
-		b, err := ioutil.ReadFile(*fKeyFile)
+		b, err := os.ReadFile(*fKeyFile)
 		if err != nil {
 			return err
 		}
@@ -99,7 +89,7 @@ Options:
 		salt = b
 	}
 	if *fSaltFile != "" {
-		b, err := ioutil.ReadFile(*fSaltFile)
+		b, err := os.ReadFile(*fSaltFile)
 		if err != nil {
 			return err
 		}

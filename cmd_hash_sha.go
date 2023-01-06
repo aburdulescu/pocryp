@@ -1,14 +1,10 @@
 package main
 
 import (
-	"crypto/sha1"
-	"crypto/sha256"
-	"crypto/sha512"
 	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
-	"hash"
 	"io"
 	"os"
 )
@@ -31,29 +27,20 @@ Options:
 
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
 	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
-	fAlg := fset.String("alg", "", "SHA algorithm to use; one of: SHA-1, SHA-224, SHA-256, SHA-384, SHA-512.")
+	fAlg := fset.String("alg", "", fmt.Sprintf("SHA algorithm to use; one of: %s.", shaAlgs))
 	fBin := fset.Bool("bin", false, "Write output as binary not hex.")
 
-	fset.Parse(args)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
 
 	if *fAlg == "" {
 		return errors.New("hash alg not specified, use -alg")
 	}
 
-	var hashfn hash.Hash
-	switch *fAlg {
-	case "SHA-1":
-		hashfn = sha1.New()
-	case "SHA-224":
-		hashfn = sha256.New224()
-	case "SHA-256":
-		hashfn = sha256.New()
-	case "SHA-384":
-		hashfn = sha512.New384()
-	case "SHA-512":
-		hashfn = sha512.New()
-	default:
-		return errors.New("hash alg is not valid")
+	hashFunc, err := hashFuncFromStr(*fAlg)
+	if err != nil {
+		return err
 	}
 
 	var r io.Reader
@@ -80,11 +67,13 @@ Options:
 		w = f
 	}
 
-	if _, err := io.Copy(hashfn, r); err != nil {
+	h := hashFunc()
+
+	if _, err := io.Copy(h, r); err != nil {
 		return err
 	}
 
-	digest := hashfn.Sum(nil)
+	digest := h.Sum(nil)
 
 	if *fBin {
 		if _, err := w.Write(digest); err != nil {

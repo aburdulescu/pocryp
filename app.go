@@ -50,7 +50,9 @@ func (a *App) Run(args []string) error {
 	fset := flag.NewFlagSet("pocryp", flag.ExitOnError)
 	fset.Usage = a.Usage
 	fset.BoolVar(&a.printVersion, "version", false, "")
-	fset.Parse(args)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
 
 	args = fset.Args()
 

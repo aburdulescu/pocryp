@@ -7,7 +7,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 
 	poaes "bandr.me/p/pocryp/internal/aes"
@@ -38,7 +37,9 @@ Options:
 	fIV := fset.String("iv", "", "IV as hex.")
 	fAAD := fset.String("aad", "", "File which contains additional associated data as binary/text.")
 
-	fset.Parse(args)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
 
 	if *fKey == "" && *fKeyFile == "" {
 		return errors.New("no key specified, use -key or -key-file to specify it")
@@ -61,7 +62,7 @@ Options:
 		key = b
 	}
 	if *fKeyFile != "" {
-		b, err := ioutil.ReadFile(*fKeyFile)
+		b, err := os.ReadFile(*fKeyFile)
 		if err != nil {
 			return err
 		}
@@ -75,7 +76,7 @@ Options:
 
 	var aad []byte
 	if *fAAD != "" {
-		b, err := ioutil.ReadFile(*fAAD)
+		b, err := os.ReadFile(*fAAD)
 		if err != nil {
 			return err
 		}

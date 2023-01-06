@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/hex"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -64,7 +64,7 @@ func testCmdAesGcm(t *testing.T, tmp string, direction string, key, nonce, aad, 
 	)
 	if aad != nil {
 		dstpath := filepath.Join(tmp, "aad")
-		if err := ioutil.WriteFile(dstpath, aad, 0666); err != nil {
+		if err := os.WriteFile(dstpath, aad, 0600); err != nil {
 			t.Fatal(err)
 		}
 		args = append(args, "-aad", dstpath)

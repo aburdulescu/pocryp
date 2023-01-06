@@ -32,7 +32,9 @@ Options:
 	fPrime1 := fset.String("p", "", "First prime number as hex string")
 	fPrime2 := fset.String("q", "", "Second prime number as hex string")
 
-	fset.Parse(args)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
 
 	if *fMod == "" {
 		return errors.New("modulus not specified, use -n to specify it")

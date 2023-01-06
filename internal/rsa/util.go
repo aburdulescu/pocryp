@@ -16,7 +16,8 @@ func PrivateKeyFromPem(p []byte) (*rsa.PrivateKey, error) {
 	if err != nil {
 		return nil, err
 	}
-	return key.(*rsa.PrivateKey), nil
+	out, _ := key.(*rsa.PrivateKey)
+	return out, nil
 }
 
 func PublicKeyFromPem(p []byte) (*rsa.PublicKey, error) {

@@ -31,7 +31,9 @@ Options:
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
 	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
 
-	fset.Parse(args)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
 
 	var r io.Reader
 	if *fInput == "" {

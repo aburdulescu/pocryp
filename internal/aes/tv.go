@@ -23,14 +23,14 @@ type GCMTestVector struct {
 
 // from https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Algorithm-Validation-Program/documents/mac/gcmtestvectors.zip
 var GCMTestVectors = map[string]GCMTestVector{
-	"key128/nonce96/without_aad": GCMTestVector{
+	"key128/nonce96/without_aad": {
 		Key:        bytesFromHex("7fddb57453c241d03efbed3ac44e371c"),
 		Nonce:      bytesFromHex("ee283a3fc75575e33efd4887"),
 		Plaintext:  bytesFromHex("d5de42b461646c255c87bd2962d3b9a2"),
 		Ciphertext: bytesFromHex("2ccda4a5415cb91e135c2a0f78c9b2fd"),
 		Tag:        bytesFromHex("b36d1df9b9d5e596f83e8b7f52971cb3"),
 	},
-	"key128/nonce1024/with_aad": GCMTestVector{
+	"key128/nonce1024/with_aad": {
 		Key:        bytesFromHex("bc30eb76f5b063fdf1c4f9bb0bd38deb"),
 		Nonce:      bytesFromHex("a8a578769a68b6525b5f969748b4f58fd213f375402b2f0c43f6b00f0fc598853fca52ec8f8b7ea73763f7e4c1a40741ea3d3464545416c9dd4f71755b05b154eef788ec37e2ca76fa8418841503db08763d3d04a12d7e85c3abc099729c84cb94aeac88c3e432cb8675683edf023edd707aca385bfb55d5ccc4840cbac6f12e"),
 		Plaintext:  bytesFromHex("aedecddda15d1c84da2968ba351b5e5e"),
@@ -54,7 +54,7 @@ var AesBlocks = [][]byte{
 }
 
 var ECBTestVectors = map[string]AesTestVector{
-	"128": AesTestVector{
+	"128": {
 		Key: bytesFromHex("2b7e151628aed2a6abf7158809cf4f3c"),
 		Ciphertexts: [][]byte{
 			bytesFromHex("3ad77bb40d7a3660a89ecaf32466ef97"),
@@ -63,7 +63,7 @@ var ECBTestVectors = map[string]AesTestVector{
 			bytesFromHex("7b0c785e27e8ad3f8223207104725dd4"),
 		},
 	},
-	"192": AesTestVector{
+	"192": {
 		Key: bytesFromHex("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"),
 		Ciphertexts: [][]byte{
 			bytesFromHex("bd334f1d6e45f25ff712a214571fa5cc"),
@@ -72,7 +72,7 @@ var ECBTestVectors = map[string]AesTestVector{
 			bytesFromHex("9a4b41ba738d6c72fb16691603c18e0e"),
 		},
 	},
-	"256": AesTestVector{
+	"256": {
 		Key: bytesFromHex("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"),
 		Ciphertexts: [][]byte{
 			bytesFromHex("f3eed1bdb5d2a03c064b5a7e3db181f8"),
@@ -86,7 +86,7 @@ var ECBTestVectors = map[string]AesTestVector{
 var CBCIv = bytesFromHex("000102030405060708090a0b0c0d0e0f")
 
 var CBCTestVectors = map[string]AesTestVector{
-	"128": AesTestVector{
+	"128": {
 		Key: bytesFromHex("2b7e151628aed2a6abf7158809cf4f3c"),
 		Ciphertexts: [][]byte{
 			bytesFromHex("7649abac8119b246cee98e9b12e9197d"),
@@ -95,7 +95,7 @@ var CBCTestVectors = map[string]AesTestVector{
 			bytesFromHex("3ff1caa1681fac09120eca307586e1a7"),
 		},
 	},
-	"192": AesTestVector{
+	"192": {
 		Key: bytesFromHex("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"),
 		Ciphertexts: [][]byte{
 			bytesFromHex("4f021db243bc633d7178183a9fa071e8"),
@@ -104,7 +104,7 @@ var CBCTestVectors = map[string]AesTestVector{
 			bytesFromHex("08b0e27988598881d920a9e64f5615cd"),
 		},
 	},
-	"256": AesTestVector{
+	"256": {
 		Key: bytesFromHex("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"),
 		Ciphertexts: [][]byte{
 			bytesFromHex("f58c4c04d6e5f1ba779eabfb5f7bfbd6"),

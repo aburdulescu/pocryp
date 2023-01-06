@@ -1,4 +1,6 @@
-all: env verify build vet test
+dev: build vet lint test
+
+ci: env verify build vet test
 
 env:
 	go env
@@ -14,8 +16,12 @@ vet:
 	go vet ./...
 	go vet
 
+lint:
+	which golangci-lint || go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	golangci-lint run
+
 test:
-	go test -coverprofile=cov.out ./...
+	go test -cover -coverprofile=cov.out ./...
 
 coverage: test
 	go tool cover -html cov.out -o cov.html

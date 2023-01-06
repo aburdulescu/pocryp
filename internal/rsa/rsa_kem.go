@@ -38,7 +38,7 @@ type KDFParams struct {
 }
 
 // Implement sender's operations as described in RFC5990 A.2
-func KemEncapsulate(pubKey *rsa.PublicKey, K []byte, kdfParams KDFParams) ([]byte, error) {
+func KemEncapsulate(pubKey *rsa.PublicKey, k []byte, kdfParams KDFParams) ([]byte, error) {
 	// z = RandomInteger (0, n-1)
 	z, err := rsaKemGenerateZ(pubKey)
 	if err != nil {
@@ -57,33 +57,33 @@ func KemEncapsulate(pubKey *rsa.PublicKey, K []byte, kdfParams KDFParams) ([]byt
 	C := c.Bytes()
 
 	// KEK = KDF (Z, kekLen)
-	KEK := pbkdf2.Key([]byte(Z), kdfParams.Salt, kdfParams.Iter, kdfParams.KeyLen, kdfParams.HashFunc)
+	KEK := pbkdf2.Key(Z, kdfParams.Salt, kdfParams.Iter, kdfParams.KeyLen, kdfParams.HashFunc)
 
 	// WK = Wrap (KEK, K)
-	WK, err := aes.KeyWrap(KEK, K)
+	WK, err := aes.KeyWrap(KEK, k)
 	if err != nil {
 		return nil, err
 	}
 
 	// EK = C || WK
-	EK := make([]byte, len(C)+len(WK))
-	if err := util.Concat(EK, []byte(C), WK); err != nil {
+	ek := make([]byte, len(C)+len(WK))
+	if err := util.Concat(ek, C, WK); err != nil {
 		return nil, err
 	}
 
-	return EK, err
+	return ek, err
 }
 
-func KemDecapsulate(privKey *rsa.PrivateKey, EK []byte, kdfParams KDFParams) ([]byte, error) {
+func KemDecapsulate(privKey *rsa.PrivateKey, ek []byte, kdfParams KDFParams) ([]byte, error) {
 	nLen := util.BitLenToByteLen(privKey.N.BitLen())
 
-	if len(EK) < nLen {
+	if len(ek) < nLen {
 		return nil, errors.New("decryption error: len(EK) < nLen")
 	}
 
 	// C || WK = EK
-	C := EK[:nLen]
-	WK := EK[nLen:]
+	C := ek[:nLen]
+	WK := ek[nLen:]
 
 	// c = StringToInteger (C)
 	c := new(big.Int)
@@ -103,12 +103,12 @@ func KemDecapsulate(privKey *rsa.PrivateKey, EK []byte, kdfParams KDFParams) ([]
 	Z := z.Bytes()
 
 	// KEK = KDF (Z, kekLen)
-	KEK := pbkdf2.Key([]byte(Z), kdfParams.Salt, kdfParams.Iter, kdfParams.KeyLen, kdfParams.HashFunc)
+	KEK := pbkdf2.Key(Z, kdfParams.Salt, kdfParams.Iter, kdfParams.KeyLen, kdfParams.HashFunc)
 
 	// K = Unwrap (KEK, WK)
 	K, err := aes.KeyUnwrap(KEK, WK)
 	if err != nil {
-		return nil, fmt.Errorf("decryption error: unwrap: %v", err)
+		return nil, fmt.Errorf("decryption error: unwrap: %w", err)
 	}
 
 	return K, nil

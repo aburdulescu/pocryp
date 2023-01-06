@@ -25,7 +25,9 @@ Options:
 	fPriv := fset.Bool("priv", false, "Encode PrivateKey from given input.")
 	fPub := fset.Bool("pub", false, "Encode PublicKey from given input.")
 
-	fset.Parse(args)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
 
 	if fset.NArg() != 1 {
 		return errors.New("DER hex string not specified")

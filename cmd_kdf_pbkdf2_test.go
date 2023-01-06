@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -70,7 +69,7 @@ func TestCmdKdfPbkdf2(t *testing.T) {
 			if err := cmdKdfPbkdf2(args); err != nil {
 				t.Fatal(err)
 			}
-			result, err := ioutil.ReadFile(out)
+			result, err := os.ReadFile(out)
 			if err != nil {
 				t.Fatal(err)
 			}

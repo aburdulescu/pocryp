@@ -3,13 +3,12 @@ package main
 import (
 	"bytes"
 	"encoding/hex"
-	"io/ioutil"
 	"os"
 	"testing"
 )
 
 func setupInsAndOuts(t *testing.T, in, out string, input []byte) {
-	if err := ioutil.WriteFile(in, input, 0666); err != nil {
+	if err := os.WriteFile(in, input, 0600); err != nil {
 		t.Fatal(err)
 	}
 	f, err := os.Create(out)
@@ -20,7 +19,7 @@ func setupInsAndOuts(t *testing.T, in, out string, input []byte) {
 }
 
 func expectFileContent(t *testing.T, file string, expected []byte) {
-	result, err := ioutil.ReadFile(file)
+	result, err := os.ReadFile(file)
 	if err != nil {
 		t.Fatal(err)
 	}

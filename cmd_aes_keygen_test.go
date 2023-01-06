@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strconv"
 	"testing"
@@ -36,7 +36,7 @@ func TestCmdAesKeyGen(t *testing.T) {
 			}
 			numBitsInt, _ := strconv.Atoi(numBits)
 			numBytes := numBitsInt / 8
-			result, err := ioutil.ReadFile(outPath)
+			result, err := os.ReadFile(outPath)
 			if err != nil {
 				t.Fatal(err)
 			}

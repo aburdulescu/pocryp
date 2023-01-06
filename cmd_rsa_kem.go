@@ -3,16 +3,11 @@ package main
 import (
 	"bytes"
 	"crypto/rsa"
-	"crypto/sha1"
-	"crypto/sha256"
-	"crypto/sha512"
 	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
-	"hash"
 	"io"
-	"io/ioutil"
 	"os"
 
 	porsa "bandr.me/p/pocryp/internal/rsa"
@@ -42,15 +37,21 @@ Options:
 	fKdfSalt := fset.String("kdf-salt", "", "KDF salt as hex.")
 	fKdfIter := fset.Int("kdf-iter", 5, "KDF iterations.")
 	fKdfKeyLen := fset.Int("kdf-key-len", 16, "KDF key length.")
-	fKdfHashFunc := fset.String("kdf-hash-func", "SHA-256", "KDF hash function(valid options: SHA-1, SHA-224, SHA-256, SHA-384 and SHA-512).")
+	fKdfHashFunc := fset.String(
+		"kdf-hash-func",
+		algSHA256,
+		fmt.Sprintf("KDF hash function(valid options: %s).", shaAlgs),
+	)
 
-	fset.Parse(args)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
 
 	if *fKey == "" {
 		return errors.New("no key specified, use -key to specify it")
 	}
 
-	keyData, err := ioutil.ReadFile(*fKey)
+	keyData, err := os.ReadFile(*fKey)
 	if err != nil {
 		return err
 	}
@@ -75,21 +76,12 @@ Options:
 	if err != nil {
 		return err
 	}
-	var kdfHashFunc func() hash.Hash
-	switch *fKdfHashFunc {
-	case "SHA-1":
-		kdfHashFunc = sha1.New
-	case "SHA-224":
-		kdfHashFunc = sha256.New224
-	case "SHA-256":
-		kdfHashFunc = sha256.New
-	case "SHA-384":
-		kdfHashFunc = sha512.New384
-	case "SHA-512":
-		kdfHashFunc = sha512.New
-	default:
-		return errors.New("KDF hash function is not valid")
+
+	kdfHashFunc, err := hashFuncFromStr(*fKdfHashFunc)
+	if err != nil {
+		return err
 	}
+
 	kdfParams := porsa.KDFParams{
 		Salt:     kdfSalt,
 		Iter:     *fKdfIter,

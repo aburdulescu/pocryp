@@ -30,7 +30,9 @@ Options:
 
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
 
-	fset.Parse(args)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
 
 	if fset.NArg() == 0 {
 		return errors.New("number of bits not specified")
