@@ -22,3 +22,6 @@ jobs:
 
     - name: amd64
       run: GOARCH=amd64 make ci
+
+    - name: Run golangci-lint
+      uses: golangci/golangci-lint-action@v3
