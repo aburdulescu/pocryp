@@ -24,6 +24,3 @@ jobs:
       run: |
         go env -w GOARCH=amd64
         make ci
-
-    - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@v3
