@@ -10,9 +10,9 @@ import (
 )
 
 type Command struct {
+	run   func([]string) error
 	name  string
 	usage string
-	run   func([]string) error
 }
 
 type Category struct {

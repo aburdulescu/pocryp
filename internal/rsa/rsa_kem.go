@@ -31,10 +31,10 @@ func rsaKemGenerateZ(pubKey *rsa.PublicKey) (*big.Int, error) {
 }
 
 type KDFParams struct {
+	HashFunc func() hash.Hash
 	Salt     []byte
 	Iter     int
 	KeyLen   int
-	HashFunc func() hash.Hash
 }
 
 // Implement sender's operations as described in RFC5990 A.2

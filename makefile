@@ -20,6 +20,10 @@ lint:
 	which golangci-lint || go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	golangci-lint run
 
+fieldalignment:
+	@which fieldalignment || go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest
+	fieldalignment -test=false ./...
+
 test:
 	go test -cover -coverprofile=cov.out ./...
 
