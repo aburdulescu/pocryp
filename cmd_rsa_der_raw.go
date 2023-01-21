@@ -16,6 +16,8 @@ func cmdRsaDerRaw(args []string) error {
 
 Convert RSA key from PKCS#1 ASN.1 DER to raw values(n, e, d, p, q).
 
+DER must be specified in hex form.
+
 Options:
 `)
 		fset.PrintDefaults()

@@ -2,25 +2,25 @@ package main
 
 import (
 	"bytes"
+	"crypto/x509"
 	"encoding/pem"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"os"
+
+	porsa "bandr.me/p/pocryp/internal/rsa"
 )
 
-func cmdRsaDerPem(args []string) error {
-	fset := flag.NewFlagSet("rsa-der-pem", flag.ContinueOnError)
+func cmdRsaPubFromPriv(args []string) error {
+	fset := flag.NewFlagSet("rsa-pub-from-priv", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-der-pem -priv/-pub [-in INPUT] [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-pub-from-priv [-in INPUT] [-out OUTPUT]
 
-Convert RSA key from PKCS#1 ASN.1 DER to PEM.
+Extract RSA public key from private key, specified as PEM.
 
 If -in is not specified, stdin will be read.
 If -out is not specified, the output will be printed to stdout.
-
-DER input must be specified in binary form.
 
 Options:
 `)
@@ -28,8 +28,6 @@ Options:
 		os.Exit(1)
 	}
 
-	fPriv := fset.Bool("priv", false, "Encode PrivateKey from given input.")
-	fPub := fset.Bool("pub", false, "Encode PublicKey from given input.")
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
 	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
 
@@ -66,21 +64,19 @@ Options:
 		return err
 	}
 
-	var blockType string
-	switch {
-	case *fPriv:
-		blockType = "RSA PRIVATE KEY"
-	case *fPub:
-		blockType = "RSA PUBLIC KEY"
-	default:
-		return errors.New("need to specify one of -priv or -pub")
+	privKey, err := porsa.PrivateKeyFromPem(input.Bytes())
+	if err != nil {
+		return err
 	}
 
-	block := &pem.Block{
-		Type:  blockType,
-		Bytes: input.Bytes(),
+	pubKey := privKey.PublicKey
+
+	pubKeyBlock := &pem.Block{
+		Type:  "RSA PUBLIC KEY",
+		Bytes: x509.MarshalPKCS1PublicKey(&pubKey),
 	}
-	if err := pem.Encode(w, block); err != nil {
+
+	if err := pem.Encode(w, pubKeyBlock); err != nil {
 		return err
 	}
 

@@ -27,7 +27,9 @@ func main() {
 	app.Add("RSA", Command{
 		name: "rsa-keygen", usage: "Generate RSA key", run: cmdRsaKeyGen,
 	})
-
+	app.Add("RSA", Command{
+		name: "rsa-pub-from-priv", usage: "Extract RSA public key from private key", run: cmdRsaPubFromPriv,
+	})
 	app.Add("RSA", Command{
 		name: "rsa-kem", usage: "Encapsulate/Decapsulate using RSA-KEM", run: cmdRsaKem,
 	})

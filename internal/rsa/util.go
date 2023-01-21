@@ -12,12 +12,7 @@ func PrivateKeyFromPem(p []byte) (*rsa.PrivateKey, error) {
 	if block == nil {
 		return nil, errors.New("failed to parse PEM block containing the key")
 	}
-	key, err := x509.ParsePKCS8PrivateKey(block.Bytes)
-	if err != nil {
-		return nil, err
-	}
-	out, _ := key.(*rsa.PrivateKey)
-	return out, nil
+	return x509.ParsePKCS1PrivateKey(block.Bytes)
 }
 
 func PublicKeyFromPem(p []byte) (*rsa.PublicKey, error) {
@@ -25,15 +20,5 @@ func PublicKeyFromPem(p []byte) (*rsa.PublicKey, error) {
 	if block == nil {
 		return nil, errors.New("failed to parse PEM block containing the key")
 	}
-	key, err := x509.ParsePKIXPublicKey(block.Bytes)
-	if err != nil {
-		return nil, err
-	}
-	switch key := key.(type) {
-	case *rsa.PublicKey:
-		return key, nil
-	default:
-		break // fall through
-	}
-	return nil, errors.New("Key type is not RSA")
+	return x509.ParsePKCS1PublicKey(block.Bytes)
 }
