@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/pem"
 	"errors"
 	"flag"
@@ -28,6 +29,7 @@ Options:
 
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
 	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
+	fPrintBin := fset.Bool("bin", false, "Print output in binary form.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
@@ -67,8 +69,12 @@ Options:
 		return errors.New("failed to parse PEM block")
 	}
 
-	if _, err := io.Copy(w, bytes.NewBuffer(block.Bytes)); err != nil {
-		return err
+	if *fPrintBin {
+		if _, err := io.Copy(w, bytes.NewBuffer(block.Bytes)); err != nil {
+			return err
+		}
+	} else {
+		fmt.Fprintln(w, hex.EncodeToString(block.Bytes))
 	}
 
 	return nil
