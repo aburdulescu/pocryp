@@ -16,8 +16,8 @@
 
 # RSA
 
-- [ ] Public key from Private key
 - [x] Key gen
+- [x] Public key from Private key
 - [x] RSA-KEM
 [RFC5990](https://www.rfc-editor.org/rfc/rfc5990)
 - [x] raw <-> PKCS#1 ASN.1 DER
