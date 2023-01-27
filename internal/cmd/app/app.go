@@ -100,6 +100,7 @@ func (a *App) Add(category string, c Command) {
 		a.categories = append(a.categories, Category{name: category})
 		i = len(a.categories) - 1
 	}
+	c.Name = category + "-" + c.Name
 	a.categories[i].commands = append(a.categories[i].commands, c)
 	sort.Slice(a.categories, func(i, j int) bool {
 		return a.categories[i].name < a.categories[j].name
@@ -132,6 +133,8 @@ Flags:
 Commands:
   help     Print this message
   version  Print version information
+
+Categories:
 
 `)
 	for _, v := range a.categories {
