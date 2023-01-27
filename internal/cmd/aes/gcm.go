@@ -1,8 +1,7 @@
-package main
+package aes
 
 import (
 	"bytes"
-	"crypto/cipher"
 	"encoding/hex"
 	"errors"
 	"flag"
@@ -13,12 +12,12 @@ import (
 	poaes "bandr.me/p/pocryp/internal/aes"
 )
 
-func cmdAesCbc(args []string) error {
-	fset := flag.NewFlagSet("aes-cbc", flag.ContinueOnError)
+func Gcm(args []string) error {
+	fset := flag.NewFlagSet("aes-gcm", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp aes-cbc [-e/-d] -key/-key-file -iv [-in INPUT] [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp aes-gcm [-e/-d] -key|-key-file -iv -aad [-in INPUT] [-out OUTPUT]
 
-Encrypt/Decrypt INPUT to OUTPUT using AES-CBC.
+Encrypt/Decrypt INPUT to OUTPUT using AES-GCM.
 
 If -in is not specified, stdin will be read.
 If -out is not specified, the output will be printed to stdout.
@@ -36,16 +35,18 @@ Options:
 	fKey := fset.String("key", "", "Key as hex.")
 	fKeyFile := fset.String("key-file", "", "File which contains the key as binary/text.")
 	fIV := fset.String("iv", "", "IV as hex.")
+	fAAD := fset.String("aad", "", "File which contains additional associated data as binary/text.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
 	}
 
 	if *fKey == "" && *fKeyFile == "" {
-		return errors.New("no key specified, use -k or --key-file to specify it")
+		return errors.New("no key specified, use -key or -key-file to specify it")
 	}
+
 	if *fKey != "" && *fKeyFile != "" {
-		return errors.New("cannot use -k and --key-file at the same time")
+		return errors.New("cannot use -key and -key-file at the same time")
 	}
 
 	if *fIV == "" {
@@ -71,6 +72,15 @@ Options:
 	iv, err := hex.DecodeString(*fIV)
 	if err != nil {
 		return err
+	}
+
+	var aad []byte
+	if *fAAD != "" {
+		b, err := os.ReadFile(*fAAD)
+		if err != nil {
+			return err
+		}
+		aad = b
 	}
 
 	var r io.Reader
@@ -102,20 +112,18 @@ Options:
 		return err
 	}
 
-	var c cipher.BlockMode
+	var output []byte
 	switch {
 	case *fEncrypt:
-		c, err = poaes.NewCBCEncrypter(key, iv)
+		output, err = poaes.GCM(key, iv, input.Bytes(), aad, true)
 	case *fDecrypt:
-		c, err = poaes.NewCBCDecrypter(key, iv)
+		output, err = poaes.GCM(key, iv, input.Bytes(), aad, false)
 	default:
-		c, err = poaes.NewCBCEncrypter(key, iv)
+		output, err = poaes.GCM(key, iv, input.Bytes(), aad, true)
 	}
 	if err != nil {
 		return err
 	}
-
-	output := poaes.CBCProcessBlocks(c, input.Bytes())
 
 	if _, err := io.Copy(w, bytes.NewBuffer(output)); err != nil {
 		return err

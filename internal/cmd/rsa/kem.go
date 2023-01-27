@@ -1,4 +1,4 @@
-package main
+package rsa
 
 import (
 	"bytes"
@@ -10,10 +10,11 @@ import (
 	"io"
 	"os"
 
+	"bandr.me/p/pocryp/internal/cmd/common"
 	porsa "bandr.me/p/pocryp/internal/rsa"
 )
 
-func cmdRsaKem(args []string) error {
+func Kem(args []string) error {
 	fset := flag.NewFlagSet("rsa-kem", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-kem [-e/-d] -key [-in INPUT] [-out OUTPUT]
@@ -39,8 +40,8 @@ Options:
 	fKdfKeyLen := fset.Int("kdf-key-len", 16, "KDF key length.")
 	fKdfHashFunc := fset.String(
 		"kdf-hash-func",
-		algSHA256,
-		fmt.Sprintf("KDF hash function(valid options: %s).", shaAlgs),
+		common.AlgSHA256,
+		fmt.Sprintf("KDF hash function(valid options: %s).", common.SHAAlgs),
 	)
 
 	if err := fset.Parse(args); err != nil {
@@ -77,7 +78,7 @@ Options:
 		return err
 	}
 
-	kdfHashFunc, err := hashFuncFromStr(*fKdfHashFunc)
+	kdfHashFunc, err := common.HashFuncFrom(*fKdfHashFunc)
 	if err != nil {
 		return err
 	}

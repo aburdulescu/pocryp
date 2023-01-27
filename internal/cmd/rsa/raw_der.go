@@ -1,4 +1,4 @@
-package main
+package rsa
 
 import (
 	"crypto/rsa"
@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-func cmdRsaRawDer(args []string) error {
+func RawDer(args []string) error {
 	fset := flag.NewFlagSet("rsa-raw-der", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-raw-der [-priv|-pub] -n modulus [-e publicExponent] -d privateExponent [-p prime1 -q prime2]

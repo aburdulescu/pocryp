@@ -1,10 +1,9 @@
-package main
+package aes
 
 import (
+	"bytes"
 	"crypto/rand"
-	"crypto/rsa"
-	"crypto/x509"
-	"encoding/pem"
+	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
@@ -13,12 +12,12 @@ import (
 	"strconv"
 )
 
-func cmdRsaKeyGen(args []string) error {
-	fset := flag.NewFlagSet("rsa-keygen", flag.ContinueOnError)
+func KeyGen(args []string) error {
+	fset := flag.NewFlagSet("aes-keygen", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-keygen [-out OUTPUT] NUM_BITS
+		fmt.Fprint(os.Stderr, `Usage: pocryp aes-keygen [-out OUTPUT] NUM_BITS
 
-Generate RSA key.
+Generate AES key.
 
 If -out is not specified, the output will be printed to stdout.
 
@@ -43,32 +42,29 @@ Options:
 		return err
 	}
 
-	if !(numBits == 2048 || numBits == 3072 || numBits == 4096) {
+	if !(numBits == 128 || numBits == 192 || numBits == 256) {
 		return errors.New("invalid num bits requested")
 	}
 
-	var w io.Writer
-	if *fOutput == "" {
-		w = os.Stdout
-	} else {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		w = f
-	}
+	numBits /= 8
 
-	key, err := rsa.GenerateKey(rand.Reader, numBits)
-	if err != nil {
+	output := make([]byte, numBits)
+	if _, err := rand.Read(output); err != nil {
 		return err
 	}
 
-	block := &pem.Block{
-		Type:  "RSA PRIVATE KEY",
-		Bytes: x509.MarshalPKCS1PrivateKey(key),
+	if *fOutput == "" {
+		fmt.Println(hex.EncodeToString(output))
+		return nil
 	}
-	if err := pem.Encode(w, block); err != nil {
+
+	f, err := os.Create(*fOutput)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	if _, err := io.Copy(f, bytes.NewBuffer(output)); err != nil {
 		return err
 	}
 

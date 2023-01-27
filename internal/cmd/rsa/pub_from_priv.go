@@ -1,4 +1,4 @@
-package main
+package rsa
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 	porsa "bandr.me/p/pocryp/internal/rsa"
 )
 
-func cmdRsaPubFromPriv(args []string) error {
+func PubFromPriv(args []string) error {
 	fset := flag.NewFlagSet("rsa-pub-from-priv", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-pub-from-priv [-in INPUT] [-out OUTPUT]

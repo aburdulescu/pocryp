@@ -1,4 +1,4 @@
-package main
+package rsa
 
 import (
 	"crypto/x509"
@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func cmdRsaDerRaw(args []string) error {
+func DerRaw(args []string) error {
 	fset := flag.NewFlagSet("rsa-der-raw", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-der-raw -priv/-pub DER

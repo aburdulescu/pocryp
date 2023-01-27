@@ -1,4 +1,4 @@
-package main
+package kdf
 
 import (
 	"bytes"
@@ -10,9 +10,11 @@ import (
 	"os"
 
 	"golang.org/x/crypto/pbkdf2"
+
+	"bandr.me/p/pocryp/internal/cmd/common"
 )
 
-func cmdKdfPbkdf2(args []string) error {
+func Pbkdf2(args []string) error {
 	fset := flag.NewFlagSet("kdf-pbkdf2", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp kdf-pbkdf2 -key|-key-file -salt|-salt-file -iter -len -hash [-out OUTPUT]
@@ -37,8 +39,8 @@ Options:
 	fLen := fset.Int("len", 128, "Bit-length of the derived key.")
 	fHashFunc := fset.String(
 		"hash",
-		algSHA256,
-		fmt.Sprintf("Hash function(valid options: %s).", shaAlgs),
+		common.AlgSHA256,
+		fmt.Sprintf("Hash function(valid options: %s).", common.SHAAlgs),
 	)
 
 	if err := fset.Parse(args); err != nil {
@@ -59,7 +61,7 @@ Options:
 		return errors.New("cannot use -salt and -salt-file at the same time")
 	}
 
-	hashFunc, err := hashFuncFromStr(*fHashFunc)
+	hashFunc, err := common.HashFuncFrom(*fHashFunc)
 	if err != nil {
 		return err
 	}

@@ -1,8 +1,7 @@
-package main
+package rsa
 
 import (
 	"bytes"
-	"encoding/hex"
 	"encoding/pem"
 	"errors"
 	"flag"
@@ -11,15 +10,17 @@ import (
 	"os"
 )
 
-func cmdRsaPemDer(args []string) error {
-	fset := flag.NewFlagSet("rsa-pem-der", flag.ContinueOnError)
+func DerPem(args []string) error {
+	fset := flag.NewFlagSet("rsa-der-pem", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-pem-der [-in INPUT] [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-der-pem -priv/-pub [-in INPUT] [-out OUTPUT]
 
-Convert RSA key from PEM to PKCS#1 ASN.1 DER.
+Convert RSA key from PKCS#1 ASN.1 DER to PEM.
 
 If -in is not specified, stdin will be read.
 If -out is not specified, the output will be printed to stdout.
+
+DER input must be specified in binary form.
 
 Options:
 `)
@@ -27,9 +28,10 @@ Options:
 		os.Exit(1)
 	}
 
+	fPriv := fset.Bool("priv", false, "Encode PrivateKey from given input.")
+	fPub := fset.Bool("pub", false, "Encode PublicKey from given input.")
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
 	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
-	fPrintBin := fset.Bool("bin", false, "Print output in binary form.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
@@ -64,17 +66,22 @@ Options:
 		return err
 	}
 
-	block, _ := pem.Decode(input.Bytes())
-	if block == nil {
-		return errors.New("failed to parse PEM block")
+	var blockType string
+	switch {
+	case *fPriv:
+		blockType = "RSA PRIVATE KEY"
+	case *fPub:
+		blockType = "RSA PUBLIC KEY"
+	default:
+		return errors.New("need to specify one of -priv or -pub")
 	}
 
-	if *fPrintBin {
-		if _, err := io.Copy(w, bytes.NewBuffer(block.Bytes)); err != nil {
-			return err
-		}
-	} else {
-		fmt.Fprintln(w, hex.EncodeToString(block.Bytes))
+	block := &pem.Block{
+		Type:  blockType,
+		Bytes: input.Bytes(),
+	}
+	if err := pem.Encode(w, block); err != nil {
+		return err
 	}
 
 	return nil

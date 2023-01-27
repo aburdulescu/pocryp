@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"testing"
@@ -16,19 +16,19 @@ func TestApp(t *testing.T) {
 	}
 
 	app.Add("foo", Command{
-		name:  "bar",
-		usage: "bar",
-		run:   func(args []string) error { return nil },
+		Name:  "bar",
+		Usage: "bar",
+		Run:   func(args []string) error { return nil },
 	})
 	app.Add("foo", Command{
-		name:  "baz",
-		usage: "baz",
-		run:   func(args []string) error { return nil },
+		Name:  "baz",
+		Usage: "baz",
+		Run:   func(args []string) error { return nil },
 	})
 	app.Add("fizz", Command{
-		name:  "buzz",
-		usage: "barr",
-		run:   func(args []string) error { return nil },
+		Name:  "buzz",
+		Usage: "barr",
+		Run:   func(args []string) error { return nil },
 	})
 
 	if err := app.Run([]string{"nothing"}); err == nil {

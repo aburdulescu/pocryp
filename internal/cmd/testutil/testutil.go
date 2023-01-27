@@ -1,4 +1,4 @@
-package main
+package testutil
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func setupInsAndOuts(t *testing.T, in, out string, input []byte) {
+func SetupInsAndOuts(t *testing.T, in, out string, input []byte) {
 	if err := os.WriteFile(in, input, 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -18,7 +18,7 @@ func setupInsAndOuts(t *testing.T, in, out string, input []byte) {
 	defer f.Close()
 }
 
-func expectFileContent(t *testing.T, file string, expected []byte) {
+func ExpectFileContent(t *testing.T, file string, expected []byte) {
 	result, err := os.ReadFile(file)
 	if err != nil {
 		t.Fatal(err)

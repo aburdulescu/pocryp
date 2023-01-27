@@ -1,4 +1,4 @@
-package main
+package aes
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 	poaes "bandr.me/p/pocryp/internal/aes"
 )
 
-func cmdAesEcb(args []string) error {
+func Ecb(args []string) error {
 	fset := flag.NewFlagSet("aes-ecb", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp aes-ecb [-e/-d] -key|-key-file [-in INPUT] [-out OUTPUT]

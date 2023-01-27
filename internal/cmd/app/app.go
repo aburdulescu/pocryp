@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"flag"
@@ -10,9 +10,9 @@ import (
 )
 
 type Command struct {
-	run   func([]string) error
-	name  string
-	usage string
+	Run   func([]string) error
+	Name  string
+	Usage string
 }
 
 type Category struct {
@@ -80,8 +80,8 @@ func (a *App) Run(args []string) error {
 
 	for _, category := range a.categories {
 		for _, cmd := range category.commands {
-			if cmd.name == name {
-				return cmd.run(args)
+			if cmd.Name == name {
+				return cmd.Run(args)
 			}
 		}
 	}
@@ -113,8 +113,8 @@ func (a App) maxCommandName(category string) int {
 			continue
 		}
 		for _, cmd := range v.commands {
-			if len(cmd.name) > max {
-				max = len(cmd.name)
+			if len(cmd.Name) > max {
+				max = len(cmd.Name)
 			}
 		}
 	}
@@ -138,8 +138,8 @@ Commands:
 		fmt.Fprintf(w, "%s:\n", v.name)
 		mlen := a.maxCommandName(v.name)
 		for _, cmd := range v.commands {
-			padding := strings.Repeat(" ", mlen-len(cmd.name))
-			fmt.Fprintf(w, "  %s%s  %s\n", cmd.name, padding, cmd.usage)
+			padding := strings.Repeat(" ", mlen-len(cmd.Name))
+			fmt.Fprintf(w, "  %s%s  %s\n", cmd.Name, padding, cmd.Usage)
 		}
 		fmt.Fprint(w, "\n")
 	}

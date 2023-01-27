@@ -1,4 +1,4 @@
-package main
+package aes
 
 import (
 	"bytes"
@@ -12,12 +12,12 @@ import (
 	poaes "bandr.me/p/pocryp/internal/aes"
 )
 
-func cmdAesGcm(args []string) error {
-	fset := flag.NewFlagSet("aes-gcm", flag.ContinueOnError)
+func Keywrap(args []string) error {
+	fset := flag.NewFlagSet("aes-keywrap", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp aes-gcm [-e/-d] -key|-key-file -iv -aad [-in INPUT] [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp aes-keywrap [-w/-u] -key/-key-file [-in INPUT] [-out OUTPUT]
 
-Encrypt/Decrypt INPUT to OUTPUT using AES-GCM.
+Wrap/Unwrap INPUT to OUTPUT using AES-KEYWRAP.
 
 If -in is not specified, stdin will be read.
 If -out is not specified, the output will be printed to stdout.
@@ -28,29 +28,22 @@ Options:
 		os.Exit(1)
 	}
 
-	fEncrypt := fset.Bool("e", false, "Encrypt the input to the output. Default if omitted.")
-	fDecrypt := fset.Bool("d", false, "Decrypt the input to the output.")
+	fWrap := fset.Bool("w", false, "Wrap the input to the output. Default if omitted.")
+	fUnwrap := fset.Bool("u", false, "Unwrap the input to the output.")
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
 	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
 	fKey := fset.String("key", "", "Key as hex.")
 	fKeyFile := fset.String("key-file", "", "File which contains the key as binary/text.")
-	fIV := fset.String("iv", "", "IV as hex.")
-	fAAD := fset.String("aad", "", "File which contains additional associated data as binary/text.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
 	}
 
 	if *fKey == "" && *fKeyFile == "" {
-		return errors.New("no key specified, use -key or -key-file to specify it")
+		return errors.New("no key specified, use -k or --key-file to specify it")
 	}
-
 	if *fKey != "" && *fKeyFile != "" {
-		return errors.New("cannot use -key and -key-file at the same time")
-	}
-
-	if *fIV == "" {
-		return errors.New("no IV specified, use -iv to specify it")
+		return errors.New("cannot use -k and --key-file at the same time")
 	}
 
 	var key []byte
@@ -67,20 +60,6 @@ Options:
 			return err
 		}
 		key = b
-	}
-
-	iv, err := hex.DecodeString(*fIV)
-	if err != nil {
-		return err
-	}
-
-	var aad []byte
-	if *fAAD != "" {
-		b, err := os.ReadFile(*fAAD)
-		if err != nil {
-			return err
-		}
-		aad = b
 	}
 
 	var r io.Reader
@@ -113,13 +92,14 @@ Options:
 	}
 
 	var output []byte
+	var err error
 	switch {
-	case *fEncrypt:
-		output, err = poaes.GCM(key, iv, input.Bytes(), aad, true)
-	case *fDecrypt:
-		output, err = poaes.GCM(key, iv, input.Bytes(), aad, false)
+	case *fWrap:
+		output, err = poaes.KeyWrap(key, input.Bytes())
+	case *fUnwrap:
+		output, err = poaes.KeyUnwrap(key, input.Bytes())
 	default:
-		output, err = poaes.GCM(key, iv, input.Bytes(), aad, true)
+		output, err = poaes.KeyWrap(key, input.Bytes())
 	}
 	if err != nil {
 		return err

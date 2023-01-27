@@ -1,4 +1,4 @@
-package main
+package hash
 
 import (
 	"encoding/hex"
@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"bandr.me/p/pocryp/internal/cmd/common"
 )
 
-func cmdHashSha(args []string) error {
+func Sha(args []string) error {
 	fset := flag.NewFlagSet("hash-sha", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp hash-sha -alg [-bin] [-in INPUT] [-out OUTPUT]
@@ -27,7 +29,7 @@ Options:
 
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
 	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
-	fAlg := fset.String("alg", "", fmt.Sprintf("SHA algorithm to use; one of: %s.", shaAlgs))
+	fAlg := fset.String("alg", "", fmt.Sprintf("SHA algorithm to use; one of: %s.", common.SHAAlgs))
 	fBin := fset.Bool("bin", false, "Write output as binary not hex.")
 
 	if err := fset.Parse(args); err != nil {
@@ -38,7 +40,7 @@ Options:
 		return errors.New("hash alg not specified, use -alg")
 	}
 
-	hashFunc, err := hashFuncFromStr(*fAlg)
+	hashFunc, err := common.HashFuncFrom(*fAlg)
 	if err != nil {
 		return err
 	}
