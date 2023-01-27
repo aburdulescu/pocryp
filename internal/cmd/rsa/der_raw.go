@@ -21,7 +21,6 @@ DER must be specified in hex form.
 Options:
 `)
 		fset.PrintDefaults()
-		os.Exit(1)
 	}
 
 	fPriv := fset.Bool("priv", false, "Encode PrivateKey from given input.")
@@ -32,6 +31,7 @@ Options:
 	}
 
 	if fset.NArg() != 1 {
+		fset.Usage()
 		return errors.New("DER hex string not specified")
 	}
 
@@ -59,6 +59,7 @@ Options:
 		fmt.Printf("n=%s\n", hex.EncodeToString(key.N.Bytes()))
 		fmt.Printf("e=%x\n", key.E)
 	default:
+		fset.Usage()
 		return errors.New("need to specify one of -priv or -pub")
 	}
 

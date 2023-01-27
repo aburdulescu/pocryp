@@ -24,7 +24,6 @@ If -out is not specified, the output will be printed to stdout.
 Options:
 `)
 		fset.PrintDefaults()
-		os.Exit(1)
 	}
 
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")

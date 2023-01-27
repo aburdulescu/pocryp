@@ -25,7 +25,6 @@ If -out is not specified, the output will be printed to stdout.
 Options:
 `)
 		fset.PrintDefaults()
-		os.Exit(1)
 	}
 
 	fEncrypt := fset.Bool("e", false, "Encrypt the input to the output. Default if omitted.")
@@ -40,10 +39,12 @@ Options:
 	}
 
 	if *fKey == "" && *fKeyFile == "" {
+		fset.Usage()
 		return errors.New("no key specified, use -key or -key-file to specify it")
 	}
 
 	if *fKey != "" && *fKeyFile != "" {
+		fset.Usage()
 		return errors.New("cannot use -key and -key-file at the same time")
 	}
 

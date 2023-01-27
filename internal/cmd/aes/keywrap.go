@@ -25,7 +25,6 @@ If -out is not specified, the output will be printed to stdout.
 Options:
 `)
 		fset.PrintDefaults()
-		os.Exit(1)
 	}
 
 	fWrap := fset.Bool("w", false, "Wrap the input to the output. Default if omitted.")
@@ -40,9 +39,11 @@ Options:
 	}
 
 	if *fKey == "" && *fKeyFile == "" {
+		fset.Usage()
 		return errors.New("no key specified, use -k or --key-file to specify it")
 	}
 	if *fKey != "" && *fKeyFile != "" {
+		fset.Usage()
 		return errors.New("cannot use -k and --key-file at the same time")
 	}
 

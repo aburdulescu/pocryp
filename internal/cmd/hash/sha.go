@@ -24,7 +24,6 @@ If -out is not specified, the output will be printed to stdout.
 Options:
 `)
 		fset.PrintDefaults()
-		os.Exit(1)
 	}
 
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
@@ -37,11 +36,13 @@ Options:
 	}
 
 	if *fAlg == "" {
+		fset.Usage()
 		return errors.New("hash alg not specified, use -alg")
 	}
 
 	hashFunc, err := common.HashFuncFrom(*fAlg)
 	if err != nil {
+		fset.Usage()
 		return err
 	}
 

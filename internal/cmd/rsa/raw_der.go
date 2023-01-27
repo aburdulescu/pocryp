@@ -21,7 +21,6 @@ Convert RSA key from raw values(n, e, d, p, q) to PKCS#1 ASN.1 DER.
 Options:
 `)
 		fset.PrintDefaults()
-		os.Exit(1)
 	}
 
 	fPriv := fset.Bool("priv", false, "Encode PrivateKey from given inputs.")
@@ -37,10 +36,12 @@ Options:
 	}
 
 	if *fMod == "" {
+		fset.Usage()
 		return errors.New("modulus not specified, use -n to specify it")
 	}
 
 	if *fPub && *fPriv {
+		fset.Usage()
 		return errors.New("cannot specify -priv and -pub at the same time, choose one")
 	}
 
@@ -55,15 +56,19 @@ Options:
 	switch {
 	case *fPriv:
 		if *fPubExp == 0 {
+			fset.Usage()
 			return errors.New("-e is needed")
 		}
 		if *fPrivExp == "" {
+			fset.Usage()
 			return errors.New("-d is needed")
 		}
 		if *fPrime1 == "" {
+			fset.Usage()
 			return errors.New("-p is needed")
 		}
 		if *fPrime2 == "" {
+			fset.Usage()
 			return errors.New("-q is needed")
 		}
 		dBytes, err := hex.DecodeString(*fPrivExp)
@@ -95,6 +100,7 @@ Options:
 		result = x509.MarshalPKCS1PrivateKey(key)
 	case *fPub:
 		if *fPubExp == 0 {
+			fset.Usage()
 			return errors.New("-e is needed")
 		}
 		key := &rsa.PublicKey{
@@ -103,6 +109,7 @@ Options:
 		}
 		result = x509.MarshalPKCS1PublicKey(key)
 	default:
+		fset.Usage()
 		return errors.New("need to specify one of -priv or -pub")
 	}
 

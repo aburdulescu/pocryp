@@ -27,7 +27,6 @@ If -out is not specified, the output will be printed to stdout.
 Options:
 `)
 		fset.PrintDefaults()
-		os.Exit(1)
 	}
 
 	fEncapsulate := fset.Bool("e", false, "Encapsulate the input to the output. Default if omitted.")
@@ -49,6 +48,7 @@ Options:
 	}
 
 	if *fKey == "" {
+		fset.Usage()
 		return errors.New("no key specified, use -key to specify it")
 	}
 
@@ -71,6 +71,7 @@ Options:
 	}
 
 	if *fKdfSalt == "" {
+		fset.Usage()
 		return errors.New("KDF salt cannot be empty")
 	}
 	kdfSalt, err := hex.DecodeString(*fKdfSalt)
@@ -80,6 +81,7 @@ Options:
 
 	kdfHashFunc, err := common.HashFuncFrom(*fKdfHashFunc)
 	if err != nil {
+		fset.Usage()
 		return err
 	}
 

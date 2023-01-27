@@ -25,7 +25,6 @@ DER input must be specified in binary form.
 Options:
 `)
 		fset.PrintDefaults()
-		os.Exit(1)
 	}
 
 	fPriv := fset.Bool("priv", false, "Encode PrivateKey from given input.")
@@ -73,6 +72,7 @@ Options:
 	case *fPub:
 		blockType = "RSA PUBLIC KEY"
 	default:
+		fset.Usage()
 		return errors.New("need to specify one of -priv or -pub")
 	}
 

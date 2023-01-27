@@ -18,13 +18,13 @@ func KeyGen(args []string) error {
 		fmt.Fprint(os.Stderr, `Usage: pocryp aes-keygen [-out OUTPUT] NUM_BITS
 
 Generate AES key.
+Valid NUM_BITS: 128, 192, 256.
 
 If -out is not specified, the output will be printed to stdout.
 
 Options:
 `)
 		fset.PrintDefaults()
-		os.Exit(1)
 	}
 
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
@@ -34,6 +34,7 @@ Options:
 	}
 
 	if fset.NArg() == 0 {
+		fset.Usage()
 		return errors.New("number of bits not specified")
 	}
 
@@ -43,6 +44,7 @@ Options:
 	}
 
 	if !(numBits == 128 || numBits == 192 || numBits == 256) {
+		fset.Usage()
 		return errors.New("invalid num bits requested")
 	}
 

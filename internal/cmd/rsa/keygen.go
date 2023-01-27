@@ -19,13 +19,13 @@ func KeyGen(args []string) error {
 		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-keygen [-out OUTPUT] NUM_BITS
 
 Generate RSA key.
+Valid NUM_BITS: 2048, 3072, 4096.
 
 If -out is not specified, the output will be printed to stdout.
 
 Options:
 `)
 		fset.PrintDefaults()
-		os.Exit(1)
 	}
 
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
@@ -35,6 +35,7 @@ Options:
 	}
 
 	if fset.NArg() == 0 {
+		fset.Usage()
 		return errors.New("number of bits not specified")
 	}
 
@@ -44,6 +45,7 @@ Options:
 	}
 
 	if !(numBits == 2048 || numBits == 3072 || numBits == 4096) {
+		fset.Usage()
 		return errors.New("invalid num bits requested")
 	}
 

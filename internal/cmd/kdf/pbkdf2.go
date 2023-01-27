@@ -27,7 +27,6 @@ If -out is not specified, the output will be printed to stdout.
 Options:
 `)
 		fset.PrintDefaults()
-		os.Exit(1)
 	}
 
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
@@ -48,21 +47,26 @@ Options:
 	}
 
 	if *fKey == "" && *fKeyFile == "" {
+		fset.Usage()
 		return errors.New("no key specified, use -key or -key-file to specify it")
 	}
 	if *fKey != "" && *fKeyFile != "" {
+		fset.Usage()
 		return errors.New("cannot use -key and -key-file at the same time")
 	}
 
 	if *fSalt == "" && *fSaltFile == "" {
+		fset.Usage()
 		return errors.New("no salt specified, use -salt or -salt-file to specify it")
 	}
 	if *fSalt != "" && *fSaltFile != "" {
+		fset.Usage()
 		return errors.New("cannot use -salt and -salt-file at the same time")
 	}
 
 	hashFunc, err := common.HashFuncFrom(*fHashFunc)
 	if err != nil {
+		fset.Usage()
 		return err
 	}
 
