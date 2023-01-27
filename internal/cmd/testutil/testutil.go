@@ -8,6 +8,7 @@ import (
 )
 
 func SetupInsAndOuts(t *testing.T, in, out string, input []byte) {
+	t.Helper()
 	if err := os.WriteFile(in, input, 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -19,6 +20,7 @@ func SetupInsAndOuts(t *testing.T, in, out string, input []byte) {
 }
 
 func ExpectFileContent(t *testing.T, file string, expected []byte) {
+	t.Helper()
 	result, err := os.ReadFile(file)
 	if err != nil {
 		t.Fatal(err)
@@ -28,4 +30,18 @@ func ExpectFileContent(t *testing.T, file string, expected []byte) {
 		t.Log("result   =", hex.EncodeToString(result))
 		t.Fatal("not equal")
 	}
+}
+
+func ExpectFileContentHex(t *testing.T, file string, expected string) {
+	t.Helper()
+	ExpectFileContent(t, file, BytesFromHex(t, expected))
+}
+
+func BytesFromHex(t testing.TB, s string) []byte {
+	t.Helper()
+	r, err := hex.DecodeString(s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return r
 }
