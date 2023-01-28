@@ -13,7 +13,7 @@ import (
 	"strconv"
 )
 
-func KeyGen(args []string) error {
+func KeyGenCmd(args []string) error {
 	fset := flag.NewFlagSet("rsa-keygen", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-keygen [-out OUTPUT] NUM_BITS

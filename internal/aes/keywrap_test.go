@@ -1,64 +1,54 @@
 package aes
 
 import (
-	"bytes"
 	"encoding/hex"
+	"path/filepath"
 	"testing"
+
+	"bandr.me/p/pocryp/internal/aes/kw"
+	"bandr.me/p/pocryp/internal/testutil"
 )
 
-func BenchmarkAesKeyWrap(b *testing.B) {
-	kek := bytesFromHexT(b, "000102030405060708090A0B0C0D0E0F")
-	data := bytesFromHexT(b, "00112233445566778899AABBCCDDEEFF")
-	for i := 0; i < b.N; i++ {
-		out, err := KeyWrap(kek, data)
-		if err != nil {
-			b.Fatal(err)
-		}
-		_, err = KeyUnwrap(kek, out)
-		if err != nil {
-			b.Fatal(err)
-		}
-	}
-}
-
-func TestAesKeyWrap(t *testing.T) {
-	t.Run("WrapInvalidPlaintext", func(t *testing.T) {
-		if _, err := KeyWrap(nil, []byte{0}); err == nil {
-			t.Fatal("expected and error")
-		}
-	})
-	t.Run("WrapInvalidKey", func(t *testing.T) {
-		plaintext := []byte{0, 1, 2, 3, 4, 5, 6, 7}
-		if _, err := KeyWrap([]byte{0}, plaintext); err == nil {
-			t.Fatal("expected and error")
-		}
-	})
-	t.Run("UnwrapInvalidKey", func(t *testing.T) {
-		plaintext := []byte{0, 1, 2, 3, 4, 5, 6, 7}
-		if _, err := KeyUnwrap([]byte{0}, plaintext); err == nil {
-			t.Fatal("expected and error")
-		}
-	})
-	for _, v := range KeyWrapTestVectors {
-		t.Run(v.Name, func(t *testing.T) {
-			actualCiphertext, err := KeyWrap(v.Kek, v.Plaintext)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if !bytes.Equal(v.Ciphertext, actualCiphertext) {
-				t.Log(hex.EncodeToString(v.Ciphertext))
-				t.Log(hex.EncodeToString(actualCiphertext))
-				t.Fatal("not equal")
-			}
-			actualPlaintext, err := KeyUnwrap(v.Kek, v.Ciphertext)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if !bytes.Equal(v.Plaintext, actualPlaintext) {
-				t.Log(hex.EncodeToString(v.Plaintext))
-				t.Log(hex.EncodeToString(actualPlaintext))
-				t.Fatal("not equal")
-			}
+func TestKeyWrapCmd(t *testing.T) {
+	tmp := t.TempDir()
+	for _, tv := range kw.TestVectors {
+		t.Run("Wrap-"+tv.Name, func(t *testing.T) {
+			testKeyWrapCmd(t, tmp, "-w", tv.Kek, tv.Plaintext, tv.Ciphertext)
+		})
+		t.Run("Unwrap-"+tv.Name, func(t *testing.T) {
+			testKeyWrapCmd(t, tmp, "-u", tv.Kek, tv.Ciphertext, tv.Plaintext)
+		})
+		t.Run("Default-"+tv.Name, func(t *testing.T) {
+			testKeyWrapCmd(t, tmp, "", tv.Kek, tv.Plaintext, tv.Ciphertext)
 		})
 	}
+	t.Run("NoKey", func(t *testing.T) {
+		if err := KeyWrapCmd(nil); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	t.Run("KeyAsHexAndFromFile", func(t *testing.T) {
+		if err := KeyWrapCmd([]string{"-key=0011", "-key-file=foo"}); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+}
+
+func testKeyWrapCmd(t *testing.T, tmp string, direction string, key, input, expected []byte) {
+	out := filepath.Join(tmp, "out")
+	in := filepath.Join(tmp, "in")
+	testutil.SetupInsAndOuts(t, in, out, input)
+	var args []string
+	if direction != "" {
+		args = append(args, direction)
+	}
+	args = append(args,
+		"-key", hex.EncodeToString(key),
+		"-in", in,
+		"-out", out,
+	)
+	if err := KeyWrapCmd(args); err != nil {
+		t.Fatal(err)
+	}
+	testutil.ExpectFileContent(t, out, expected)
 }

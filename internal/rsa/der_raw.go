@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func DerRaw(args []string) error {
+func DerRawCmd(args []string) error {
 	fset := flag.NewFlagSet("rsa-der-raw", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-der-raw -priv/-pub DER

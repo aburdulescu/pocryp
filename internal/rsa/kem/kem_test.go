@@ -1,20 +1,23 @@
-package rsa
+package kem
 
 import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"os"
 	"testing"
+
+	"bandr.me/p/pocryp/internal/rsa/util"
 )
 
 func TestRsaKemEncapsulate(t *testing.T) {
 	k := []byte("yellow submarine")
 
-	privateKey, err := PrivateKeyFromPem(readFile(t, "testdata/rsa2048_private_key.pem"))
+	privateKey, err := util.PrivateKeyFromPem(readFile(t, "testdata/rsa2048_private_key.pem"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	publicKey, err := PublicKeyFromPem(readFile(t, "testdata/rsa2048_public_key.pem"))
+	publicKey, err := util.PublicKeyFromPem(readFile(t, "testdata/rsa2048_public_key.pem"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -26,13 +29,13 @@ func TestRsaKemEncapsulate(t *testing.T) {
 		HashFunc: sha256.New,
 	}
 
-	ek, err := KemEncapsulate(publicKey, k, kdfParams)
+	ek, err := Encapsulate(publicKey, k, kdfParams)
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log(hex.EncodeToString(ek))
 
-	actualK, err := KemDecapsulate(privateKey, ek, kdfParams)
+	actualK, err := Decapsulate(privateKey, ek, kdfParams)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,4 +44,12 @@ func TestRsaKemEncapsulate(t *testing.T) {
 		t.Logf("%s", actualK)
 		t.Fatal("not equal")
 	}
+}
+
+func readFile(t testing.TB, s string) []byte {
+	r, err := os.ReadFile(s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return r
 }

@@ -1,4 +1,4 @@
-package rsa
+package util
 
 import (
 	"crypto/rsa"

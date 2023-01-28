@@ -9,11 +9,9 @@ verify:
 	go mod verify
 
 build:
-	go build ./...
 	go build
 
 vet:
-	go vet ./...
 	go vet
 
 lint:

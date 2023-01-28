@@ -10,11 +10,12 @@ import (
 	"io"
 	"os"
 
-	"bandr.me/p/pocryp/internal/cmd/common"
-	porsa "bandr.me/p/pocryp/internal/rsa"
+	"bandr.me/p/pocryp/internal/common"
+	"bandr.me/p/pocryp/internal/rsa/kem"
+	"bandr.me/p/pocryp/internal/rsa/util"
 )
 
-func Kem(args []string) error {
+func KemCmd(args []string) error {
 	fset := flag.NewFlagSet("rsa-kem", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-kem [-e/-d] -key [-in INPUT] [-out OUTPUT]
@@ -59,12 +60,12 @@ Options:
 	var key any
 	switch {
 	case *fDecapsulate:
-		key, err = porsa.PrivateKeyFromPem(keyData)
+		key, err = util.PrivateKeyFromPem(keyData)
 		if err != nil {
 			return err
 		}
 	default:
-		key, err = porsa.PublicKeyFromPem(keyData)
+		key, err = util.PublicKeyFromPem(keyData)
 		if err != nil {
 			return err
 		}
@@ -85,7 +86,7 @@ Options:
 		return err
 	}
 
-	kdfParams := porsa.KDFParams{
+	kdfParams := kem.KDFParams{
 		Salt:     kdfSalt,
 		Iter:     *fKdfIter,
 		KeyLen:   *fKdfKeyLen,
@@ -124,11 +125,11 @@ Options:
 	var output []byte
 	switch {
 	case *fEncapsulate:
-		output, err = porsa.KemEncapsulate(key.(*rsa.PublicKey), input.Bytes(), kdfParams)
+		output, err = kem.Encapsulate(key.(*rsa.PublicKey), input.Bytes(), kdfParams)
 	case *fDecapsulate:
-		output, err = porsa.KemDecapsulate(key.(*rsa.PrivateKey), input.Bytes(), kdfParams)
+		output, err = kem.Decapsulate(key.(*rsa.PrivateKey), input.Bytes(), kdfParams)
 	default:
-		output, err = porsa.KemEncapsulate(key.(*rsa.PublicKey), input.Bytes(), kdfParams)
+		output, err = kem.Encapsulate(key.(*rsa.PublicKey), input.Bytes(), kdfParams)
 	}
 	if err != nil {
 		return err

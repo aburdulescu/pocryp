@@ -4,20 +4,20 @@ import (
 	"path/filepath"
 	"testing"
 
-	"bandr.me/p/pocryp/internal/cmd/common"
-	"bandr.me/p/pocryp/internal/cmd/testutil"
+	"bandr.me/p/pocryp/internal/common"
+	"bandr.me/p/pocryp/internal/testutil"
 )
 
-func TestSha(t *testing.T) {
+func TestShaCmd(t *testing.T) {
 
 	t.Run("NoAlg", func(t *testing.T) {
-		if err := Sha(nil); err == nil {
+		if err := ShaCmd(nil); err == nil {
 			t.Fatal("expected error")
 		}
 	})
 
 	t.Run("InvalidAlg", func(t *testing.T) {
-		if err := Sha([]string{"-alg=foo"}); err == nil {
+		if err := ShaCmd([]string{"-alg=foo"}); err == nil {
 			t.Fatal("expected error")
 		}
 	})
@@ -120,7 +120,7 @@ func TestSha(t *testing.T) {
 				"-bin",
 			}
 
-			if err := Sha(args); err != nil {
+			if err := ShaCmd(args); err != nil {
 				t.Fatal(err)
 			}
 

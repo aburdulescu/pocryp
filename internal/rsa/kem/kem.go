@@ -1,4 +1,4 @@
-package rsa
+package kem
 
 import (
 	"crypto/rand"
@@ -8,8 +8,9 @@ import (
 	"hash"
 	"math/big"
 
-	"bandr.me/p/pocryp/internal/aes"
+	"bandr.me/p/pocryp/internal/aes/kw"
 	"bandr.me/p/pocryp/internal/util"
+
 	"golang.org/x/crypto/pbkdf2"
 )
 
@@ -38,7 +39,7 @@ type KDFParams struct {
 }
 
 // Implement sender's operations as described in RFC5990 A.2
-func KemEncapsulate(pubKey *rsa.PublicKey, k []byte, kdfParams KDFParams) ([]byte, error) {
+func Encapsulate(pubKey *rsa.PublicKey, k []byte, kdfParams KDFParams) ([]byte, error) {
 	// z = RandomInteger (0, n-1)
 	z, err := rsaKemGenerateZ(pubKey)
 	if err != nil {
@@ -60,7 +61,7 @@ func KemEncapsulate(pubKey *rsa.PublicKey, k []byte, kdfParams KDFParams) ([]byt
 	KEK := pbkdf2.Key(Z, kdfParams.Salt, kdfParams.Iter, kdfParams.KeyLen, kdfParams.HashFunc)
 
 	// WK = Wrap (KEK, K)
-	WK, err := aes.KeyWrap(KEK, k)
+	WK, err := kw.Wrap(KEK, k)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +75,7 @@ func KemEncapsulate(pubKey *rsa.PublicKey, k []byte, kdfParams KDFParams) ([]byt
 	return ek, err
 }
 
-func KemDecapsulate(privKey *rsa.PrivateKey, ek []byte, kdfParams KDFParams) ([]byte, error) {
+func Decapsulate(privKey *rsa.PrivateKey, ek []byte, kdfParams KDFParams) ([]byte, error) {
 	nLen := util.BitLenToByteLen(privKey.N.BitLen())
 
 	if len(ek) < nLen {
@@ -106,7 +107,7 @@ func KemDecapsulate(privKey *rsa.PrivateKey, ek []byte, kdfParams KDFParams) ([]
 	KEK := pbkdf2.Key(Z, kdfParams.Salt, kdfParams.Iter, kdfParams.KeyLen, kdfParams.HashFunc)
 
 	// K = Unwrap (KEK, WK)
-	K, err := aes.KeyUnwrap(KEK, WK)
+	K, err := kw.Unwrap(KEK, WK)
 	if err != nil {
 		return nil, fmt.Errorf("decryption error: unwrap: %w", err)
 	}
