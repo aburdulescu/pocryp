@@ -45,3 +45,12 @@ func BytesFromHex(t testing.TB, s string) []byte {
 	}
 	return r
 }
+
+func ReadFile(t testing.TB, s string) []byte {
+	t.Helper()
+	r, err := os.ReadFile(s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return r
+}
