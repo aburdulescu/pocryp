@@ -15,13 +15,13 @@ type Command struct {
 	Usage string
 }
 
-type Category struct {
+type category struct {
 	name     string
 	commands []Command
 }
 
 type App struct {
-	categories []Category
+	categories []category
 
 	printVersion bool
 }
@@ -89,18 +89,18 @@ func (a *App) Run(args []string) error {
 	return fmt.Errorf("unknown command '%s'", name)
 }
 
-func (a *App) Add(category string, c Command) {
+func (a *App) Add(categoryName string, c Command) {
 	i := -1
 	for ii, v := range a.categories {
-		if v.name == category {
+		if v.name == categoryName {
 			i = ii
 		}
 	}
 	if i == -1 {
-		a.categories = append(a.categories, Category{name: category})
+		a.categories = append(a.categories, category{name: categoryName})
 		i = len(a.categories) - 1
 	}
-	c.Name = category + "-" + c.Name
+	c.Name = categoryName + "-" + c.Name
 	a.categories[i].commands = append(a.categories[i].commands, c)
 	sort.Slice(a.categories, func(i, j int) bool {
 		return a.categories[i].name < a.categories[j].name
