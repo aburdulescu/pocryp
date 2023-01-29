@@ -83,8 +83,7 @@ Options:
 			return err
 		}
 	} else {
-		output := hex.EncodeToString(digest)
-		fmt.Fprintln(w, output)
+		fmt.Fprintln(w, hex.EncodeToString(digest))
 	}
 
 	return nil

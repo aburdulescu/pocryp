@@ -31,7 +31,7 @@ func TestKeyGen(t *testing.T) {
 	for _, numBits := range tests {
 		t.Run(numBits, func(t *testing.T) {
 			outPath := filepath.Join(tmp, "out"+numBits)
-			if err := KeyGen([]string{"-out", outPath, numBits}); err != nil {
+			if err := KeyGen([]string{"-bin", "-out", outPath, numBits}); err != nil {
 				t.Fatalf("%s: %v", numBits, err)
 			}
 			numBitsInt, _ := strconv.Atoi(numBits)
