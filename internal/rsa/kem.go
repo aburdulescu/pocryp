@@ -15,7 +15,7 @@ import (
 	"bandr.me/p/pocryp/internal/rsa/util"
 )
 
-func KemCmd(args []string) error {
+func KemCmd(args ...string) error {
 	fset := flag.NewFlagSet("rsa-kem", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-kem [-e/-d] -key [-in INPUT] [-out OUTPUT]

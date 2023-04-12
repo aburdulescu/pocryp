@@ -10,7 +10,7 @@ import (
 )
 
 type Command struct {
-	Run   func([]string) error
+	Run   func(...string) error
 	Name  string
 	Usage string
 }
@@ -46,7 +46,7 @@ func printAppVersion() {
 	)
 }
 
-func (a *App) Run(args []string) error {
+func (a *App) Run(args ...string) error {
 	fset := flag.NewFlagSet("pocryp", flag.ExitOnError)
 	fset.Usage = a.Usage
 	fset.BoolVar(&a.printVersion, "version", false, "")
@@ -81,7 +81,7 @@ func (a *App) Run(args []string) error {
 	for _, category := range a.categories {
 		for _, cmd := range category.commands {
 			if cmd.Name == name {
-				return cmd.Run(args)
+				return cmd.Run(args...)
 			}
 		}
 	}

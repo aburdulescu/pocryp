@@ -30,12 +30,12 @@ func TestEcbCmd(t *testing.T) {
 		}
 	}
 	t.Run("NoKey", func(t *testing.T) {
-		if err := EcbCmd(nil); err == nil {
+		if err := EcbCmd(); err == nil {
 			t.Fatal("expected and error")
 		}
 	})
 	t.Run("KeyAsHexAndFromFile", func(t *testing.T) {
-		if err := EcbCmd([]string{"-key=0011", "-key-file=foo"}); err == nil {
+		if err := EcbCmd("-key=0011", "-key-file=foo"); err == nil {
 			t.Fatal("expected and error")
 		}
 	})
@@ -54,7 +54,7 @@ func testEcbCmd(t *testing.T, tmp string, direction string, key, input, expected
 		"-in", in,
 		"-out", out,
 	)
-	if err := EcbCmd(args); err != nil {
+	if err := EcbCmd(args...); err != nil {
 		t.Fatal(err)
 	}
 	testutil.ExpectFileContent(t, out, expected)

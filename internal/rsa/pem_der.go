@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-func PemDerCmd(args []string) error {
+func PemDerCmd(args ...string) error {
 	fset := flag.NewFlagSet("rsa-pem-der", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-pem-der [-in INPUT] [-out OUTPUT]

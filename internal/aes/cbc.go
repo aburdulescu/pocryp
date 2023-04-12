@@ -12,7 +12,7 @@ import (
 	"os"
 )
 
-func CbcCmd(args []string) error {
+func CbcCmd(args ...string) error {
 	fset := flag.NewFlagSet("aes-cbc", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp aes-cbc [-e/-d] -key/-key-file -iv [-in INPUT] [-out OUTPUT]

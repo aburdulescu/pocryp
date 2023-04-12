@@ -11,7 +11,7 @@ import (
 	"strconv"
 )
 
-func KeyGen(args []string) error {
+func KeyGen(args ...string) error {
 	fset := flag.NewFlagSet("aes-keygen", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp aes-keygen [-out OUTPUT] [-bin] NUM_BITS

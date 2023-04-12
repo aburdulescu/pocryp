@@ -12,7 +12,7 @@ import (
 	"bandr.me/p/pocryp/internal/aes/kw"
 )
 
-func KeyWrapCmd(args []string) error {
+func KeyWrapCmd(args ...string) error {
 	fset := flag.NewFlagSet("aes-keywrap", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp aes-keywrap [-w/-u] -key/-key-file [-in INPUT] [-out OUTPUT]

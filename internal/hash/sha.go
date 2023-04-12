@@ -11,7 +11,7 @@ import (
 	"bandr.me/p/pocryp/internal/common"
 )
 
-func ShaCmd(args []string) error {
+func ShaCmd(args ...string) error {
 	fset := flag.NewFlagSet("hash-sha", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp hash-sha -alg [-bin] [-in INPUT] [-out OUTPUT]

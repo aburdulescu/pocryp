@@ -9,17 +9,17 @@ import (
 
 func TestKeyGen(t *testing.T) {
 	t.Run("NoArgs", func(t *testing.T) {
-		if err := KeyGen(nil); err == nil {
+		if err := KeyGen(); err == nil {
 			t.Fatal("expected error")
 		}
 	})
 	t.Run("InvalidNumBits", func(t *testing.T) {
-		if err := KeyGen([]string{"4223"}); err == nil {
+		if err := KeyGen("4223"); err == nil {
 			t.Fatal("expected error")
 		}
 	})
 	t.Run("NumBitsNotInt", func(t *testing.T) {
-		if err := KeyGen([]string{"hello"}); err == nil {
+		if err := KeyGen("hello"); err == nil {
 			t.Fatal("expected error")
 		}
 	})
@@ -31,7 +31,7 @@ func TestKeyGen(t *testing.T) {
 	for _, numBits := range tests {
 		t.Run(numBits, func(t *testing.T) {
 			outPath := filepath.Join(tmp, "out"+numBits)
-			if err := KeyGen([]string{"-bin", "-out", outPath, numBits}); err != nil {
+			if err := KeyGen("-bin", "-out", outPath, numBits); err != nil {
 				t.Fatalf("%s: %v", numBits, err)
 			}
 			numBitsInt, _ := strconv.Atoi(numBits)

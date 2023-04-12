@@ -11,13 +11,13 @@ import (
 func TestShaCmd(t *testing.T) {
 
 	t.Run("NoAlg", func(t *testing.T) {
-		if err := ShaCmd(nil); err == nil {
+		if err := ShaCmd(); err == nil {
 			t.Fatal("expected error")
 		}
 	})
 
 	t.Run("InvalidAlg", func(t *testing.T) {
-		if err := ShaCmd([]string{"-alg=foo"}); err == nil {
+		if err := ShaCmd("-alg=foo"); err == nil {
 			t.Fatal("expected error")
 		}
 	})
@@ -120,7 +120,7 @@ func TestShaCmd(t *testing.T) {
 				"-bin",
 			}
 
-			if err := ShaCmd(args); err != nil {
+			if err := ShaCmd(args...); err != nil {
 				t.Fatal(err)
 			}
 

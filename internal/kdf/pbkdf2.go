@@ -14,7 +14,7 @@ import (
 	"bandr.me/p/pocryp/internal/common"
 )
 
-func Pbkdf2Cmd(args []string) error {
+func Pbkdf2Cmd(args ...string) error {
 	fset := flag.NewFlagSet("kdf-pbkdf2", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp kdf-pbkdf2 -key|-key-file -salt|-salt-file -iter -len -hash [-out OUTPUT]

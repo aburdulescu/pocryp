@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-func EcbCmd(args []string) error {
+func EcbCmd(args ...string) error {
 	fset := flag.NewFlagSet("aes-ecb", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp aes-ecb [-e/-d] -key|-key-file [-in INPUT] [-out OUTPUT]

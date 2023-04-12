@@ -12,7 +12,7 @@ import (
 	"bandr.me/p/pocryp/internal/rsa/util"
 )
 
-func PubFromPrivCmd(args []string) error {
+func PubFromPrivCmd(args ...string) error {
 	fset := flag.NewFlagSet("rsa-pub-from-priv", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-pub-from-priv [-in INPUT] [-out OUTPUT]

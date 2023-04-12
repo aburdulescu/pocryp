@@ -12,7 +12,7 @@ import (
 	"os"
 )
 
-func Gcm(args []string) error {
+func Gcm(args ...string) error {
 	fset := flag.NewFlagSet("aes-gcm", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp aes-gcm [-e/-d] -key|-key-file -iv -aad [-in INPUT] [-out OUTPUT]

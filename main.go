@@ -88,7 +88,7 @@ func main() {
 		Run:   hash.ShaCmd,
 	})
 
-	if err := a.Run(os.Args[1:]); err != nil {
+	if err := a.Run(os.Args[1:]...); err != nil {
 		die("%v", err)
 	}
 }

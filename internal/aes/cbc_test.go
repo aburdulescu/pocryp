@@ -32,17 +32,17 @@ func TestCbcCmd(t *testing.T) {
 		})
 	}
 	t.Run("NoKey", func(t *testing.T) {
-		if err := CbcCmd(nil); err == nil {
+		if err := CbcCmd(); err == nil {
 			t.Fatal("expected and error")
 		}
 	})
 	t.Run("KeyAsHexAndFromFile", func(t *testing.T) {
-		if err := CbcCmd([]string{"-key=0011", "-key-file=foo"}); err == nil {
+		if err := CbcCmd("-key=0011", "-key-file=foo"); err == nil {
 			t.Fatal("expected and error")
 		}
 	})
 	t.Run("NoIv", func(t *testing.T) {
-		if err := CbcCmd([]string{"-key=0011"}); err == nil {
+		if err := CbcCmd("-key=0011"); err == nil {
 			t.Fatal("expected and error")
 		}
 	})
@@ -62,7 +62,7 @@ func testCbcCmd(t *testing.T, tmp string, direction string, key, iv, input, expe
 		"-in", in,
 		"-out", out,
 	)
-	if err := CbcCmd(args); err != nil {
+	if err := CbcCmd(args...); err != nil {
 		t.Fatal(err)
 	}
 	testutil.ExpectFileContent(t, out, expected)

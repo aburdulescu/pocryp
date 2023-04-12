@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-func DerPemCmd(args []string) error {
+func DerPemCmd(args ...string) error {
 	fset := flag.NewFlagSet("rsa-der-pem", flag.ContinueOnError)
 	fset.Usage = func() {
 		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-der-pem -priv/-pub [-in INPUT] [-out OUTPUT]
