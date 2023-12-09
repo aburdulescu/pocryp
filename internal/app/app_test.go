@@ -35,7 +35,7 @@ func TestApp(t *testing.T) {
 		t.Fatal("expected an error")
 	}
 
-	if err := app.Run("foo-bar"); err != nil {
+	if err := app.Run("bar"); err != nil {
 		t.Fatal(err)
 	}
 

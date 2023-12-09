@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"os"
 	"runtime/debug"
-	"sort"
 	"strings"
 )
 
-type Command struct {
-	Run   func(...string) error
-	Name  string
-	Usage string
+type App struct {
+	categories []category
+
+	printVersion bool
 }
 
 type category struct {
@@ -20,10 +19,10 @@ type category struct {
 	commands []Command
 }
 
-type App struct {
-	categories []category
-
-	printVersion bool
+type Command struct {
+	Run   func(...string) error
+	Name  string
+	Usage string
 }
 
 func printAppVersion() {
@@ -89,7 +88,7 @@ func (a *App) Run(args ...string) error {
 	return fmt.Errorf("unknown command '%s'", name)
 }
 
-func (a *App) Add(categoryName string, c Command) {
+func (a *App) Add(categoryName string, cmds ...Command) {
 	i := -1
 	for ii, v := range a.categories {
 		if v.name == categoryName {
@@ -100,11 +99,22 @@ func (a *App) Add(categoryName string, c Command) {
 		a.categories = append(a.categories, category{name: categoryName})
 		i = len(a.categories) - 1
 	}
-	c.Name = categoryName + "-" + c.Name
-	a.categories[i].commands = append(a.categories[i].commands, c)
-	sort.Slice(a.categories, func(i, j int) bool {
-		return a.categories[i].name < a.categories[j].name
-	})
+	cat := &a.categories[i]
+	for _, cmd := range cmds {
+		if err := cat.hasCmd(cmd.Name); err != nil {
+			panic(err.Error())
+		}
+	}
+	cat.commands = append(cat.commands, cmds...)
+}
+
+func (c category) hasCmd(name string) error {
+	for _, cmd := range c.commands {
+		if cmd.Name == name {
+			return fmt.Errorf("category '%s' already has a command name '%s'", c.name, name)
+		}
+	}
+	return nil
 }
 
 func (a App) maxCommandName(category string) int {
