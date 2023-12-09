@@ -73,11 +73,25 @@ func main() {
 	)
 
 	a.Add(
+		"Message Authentication Code(MAC)",
+		app.Command{
+			Name:  "aes-cmac-generate",
+			Usage: "Generate MAC using AES-CMAC",
+			Run:   aes.CmacGenerateCmd,
+		},
+		app.Command{
+			Name:  "aes-cmac-verify",
+			Usage: "Verify MAC using AES-CMAC",
+			Run:   aes.CmacVerifyCmd,
+		},
+	)
+
+	a.Add(
 		"Authenticated Encryption(AEAD)",
 		app.Command{
 			Name:  "aes-gcm",
 			Usage: "Encrypt/Decrypt using AES-GCM",
-			Run:   aes.Gcm,
+			Run:   aes.GcmCmd,
 		},
 	)
 

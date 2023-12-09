@@ -7,11 +7,15 @@ import (
 	"testing"
 )
 
-func SetupInOut(t *testing.T, in, out string, input []byte) {
+func SetupIn(t *testing.T, in string, input []byte) {
 	t.Helper()
 	if err := os.WriteFile(in, input, 0600); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func SetupOut(t *testing.T, out string) {
+	t.Helper()
 	f, err := os.Create(out)
 	if err != nil {
 		t.Fatal(err)
@@ -19,22 +23,28 @@ func SetupInOut(t *testing.T, in, out string, input []byte) {
 	defer f.Close()
 }
 
-func ExpectFileContent(t *testing.T, file string, expected []byte) {
+func SetupInOut(t *testing.T, in, out string, input []byte) {
 	t.Helper()
-	result, err := os.ReadFile(file)
+	SetupIn(t, in, input)
+	SetupOut(t, out)
+}
+
+func ExpectFileContent(t *testing.T, file string, want []byte) {
+	t.Helper()
+	have, err := os.ReadFile(file)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Equal(expected, result) {
-		t.Log("expected =", hex.EncodeToString(expected))
-		t.Log("result   =", hex.EncodeToString(result))
+	if !bytes.Equal(want, have) {
+		t.Log("want =", hex.EncodeToString(want))
+		t.Log("have =", hex.EncodeToString(have))
 		t.Fatal("not equal")
 	}
 }
 
-func ExpectFileContentHex(t *testing.T, file string, expected string) {
+func ExpectFileContentHex(t *testing.T, file string, want string) {
 	t.Helper()
-	ExpectFileContent(t, file, BytesFromHex(t, expected))
+	ExpectFileContent(t, file, BytesFromHex(t, want))
 }
 
 func BytesFromHex(t testing.TB, s string) []byte {

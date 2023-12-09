@@ -16,7 +16,7 @@ import (
 func KeyGenCmd(args ...string) error {
 	fset := flag.NewFlagSet("rsa-keygen", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-keygen [-out OUTPUT] NUM_BITS
+		fmt.Fprint(os.Stderr, `Usage: pocryp gen-rsa [-out OUTPUT] NUM_BITS
 
 Generate RSA key.
 Valid NUM_BITS: 2048, 3072, 4096.

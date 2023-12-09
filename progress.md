@@ -30,7 +30,7 @@
 
 # Message Authentication Code
 
-- [ ] CMAC
+- [x] CMAC
 - [ ] GMAC
 - [ ] HMAC
 - [ ] Poly1305

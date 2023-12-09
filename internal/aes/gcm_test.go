@@ -10,7 +10,7 @@ import (
 	"bandr.me/p/pocryp/internal/testutil"
 )
 
-func TestGcm(t *testing.T) {
+func TestGcmCmd(t *testing.T) {
 	tmp := t.TempDir()
 	for name, tv := range GCMTestVectors {
 		t.Run("Encrypt/"+name, func(t *testing.T) {
@@ -33,17 +33,17 @@ func TestGcm(t *testing.T) {
 		})
 	}
 	t.Run("NoKey", func(t *testing.T) {
-		if err := Gcm(); err == nil {
+		if err := GcmCmd(); err == nil {
 			t.Fatal("expected and error")
 		}
 	})
 	t.Run("KeyAsHexAndFromFile", func(t *testing.T) {
-		if err := Gcm("-key=0011", "-key-file=foo"); err == nil {
+		if err := GcmCmd("-key=0011", "-key-file=foo"); err == nil {
 			t.Fatal("expected and error")
 		}
 	})
 	t.Run("NoIv", func(t *testing.T) {
-		if err := Gcm("-key=0011"); err == nil {
+		if err := GcmCmd("-key=0011"); err == nil {
 			t.Fatal("expected and error")
 		}
 	})
@@ -70,7 +70,7 @@ func testGcm(t *testing.T, tmp string, direction string, key, nonce, aad, input,
 		}
 		args = append(args, "-aad", dstpath)
 	}
-	if err := Gcm(args...); err != nil {
+	if err := GcmCmd(args...); err != nil {
 		t.Fatal(err)
 	}
 	testutil.ExpectFileContent(t, out, expected)

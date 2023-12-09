@@ -14,7 +14,7 @@ import (
 func KeyGen(args ...string) error {
 	fset := flag.NewFlagSet("aes-keygen", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp aes-keygen [-out OUTPUT] [-bin] NUM_BITS
+		fmt.Fprint(os.Stderr, `Usage: pocryp gen-aes [-out OUTPUT] [-bin] NUM_BITS
 
 Generate AES key.
 Valid NUM_BITS: 128, 192, 256.
