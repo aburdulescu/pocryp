@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func SetupInsAndOuts(t *testing.T, in, out string, input []byte) {
+func SetupInOut(t *testing.T, in, out string, input []byte) {
 	t.Helper()
 	if err := os.WriteFile(in, input, 0600); err != nil {
 		t.Fatal(err)

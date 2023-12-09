@@ -44,7 +44,7 @@ func TestEcbCmd(t *testing.T) {
 func testEcbCmd(t *testing.T, tmp string, direction string, key, input, expected []byte) {
 	out := filepath.Join(tmp, "out")
 	in := filepath.Join(tmp, "in")
-	testutil.SetupInsAndOuts(t, in, out, input)
+	testutil.SetupInOut(t, in, out, input)
 	var args []string
 	if direction != "" {
 		args = append(args, direction)
