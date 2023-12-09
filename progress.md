@@ -1,14 +1,14 @@
-# Key generation
+# Key Generation
 
 - [x] AES
 - [x] RSA
 
-# Block ciphers
+# Block Cipher
 
 - [x] ECB
 [test vectors](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf)
 
-# Stream ciphers
+# Stream Cipher
 
 - [x] CBC
 [test vectors](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf)
@@ -17,25 +17,27 @@
 - [ ] ChaCha20
 - [ ] Salsa20
 
-# Key wrapping
+# Key Wrap
 
 - [x] KEYWRAP
 [test vectors](https://www.rfc-editor.org/rfc/rfc3394#section-4)
 
-# AEAD
+# Authenticated Encryption
 
 - [x] GCM
 [test vectors](https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Algorithm-Validation-Program/documents/mac/gcmtestvectors.zip)
 - [ ] ChaCha20-Poly1305
 
-# MAC
+# Message Authentication Code
 
 - [ ] CMAC
 - [ ] GMAC
 - [ ] HMAC
 - [ ] Poly1305
 
-# RSA
+# Key Encoding
+
+## RSA
 
 - [x] Public key from Private key
 - [x] RSA-KEM
@@ -43,25 +45,25 @@
 - [x] raw <-> PKCS#1 ASN.1 DER
 - [x] PEM <-> PKCS#1 ASN.1 DER
 
-# HASH
+# Hash Function
 
 - [x] SHA1
 - [x] SHA256(224 and 256)
 - [x] SHA512(384, 512, 512/224, and 512/256)
-- [ ] SHA3
+- [x] SHA3
 - [ ] BLAKE
 
-# KDF
+# Key Derivation Function
 
 - [x] PBKDF2
 - [ ] HKDF
 - [ ] scrypt
 - [ ] argon2
 
-# EdDSA
+# Digital Signature
 
 - [ ] ED25519
 
-# ECDH
+# Key Agreement
 
 - [ ] CURVE25519

@@ -68,15 +68,6 @@ func (a *App) Run(args ...string) error {
 	name := args[0]
 	args = args[1:]
 
-	switch {
-	case name == "version":
-		printAppVersion()
-		return nil
-	case name == "help":
-		a.Usage()
-		return nil
-	}
-
 	for _, category := range a.categories {
 		for _, cmd := range category.commands {
 			if cmd.Name == name {
@@ -137,14 +128,10 @@ func (a App) Usage() {
 	fmt.Fprint(w, `Usage: pocryp command [ARGS]
 
 Flags:
-  -h,--help  Print this message
-  --version  Print version information
+  -h, --help  Print this message
+  --version   Print version information
 
-Commands:
-  help     Print this message
-  version  Print version information
-
-Categories:
+Commands(by category):
 
 `)
 	for _, v := range a.categories {

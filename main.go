@@ -73,7 +73,7 @@ func main() {
 	)
 
 	a.Add(
-		"AEAD",
+		"Authenticated Encryption(AEAD)",
 		app.Command{
 			Name:  "aes-gcm",
 			Usage: "Encrypt/Decrypt using AES-GCM",
@@ -91,7 +91,7 @@ func main() {
 	)
 
 	a.Add(
-		"Key Derivation",
+		"Key Derivation Function(KDF)",
 		app.Command{
 			Name:  "pbkdf2",
 			Usage: "Derive key using PBKDF2",
@@ -100,7 +100,7 @@ func main() {
 	)
 
 	a.Add(
-		"Hashing",
+		"Hash Function",
 		app.Command{
 			Name:  "sha",
 			Usage: "Generate cryptographic hash using SHA",
@@ -109,7 +109,7 @@ func main() {
 	)
 
 	a.Add(
-		"Key Encapsulation Mechanism",
+		"Key Encapsulation Mechanism(KEM)",
 		app.Command{
 			Name:  "rsa-kem",
 			Usage: "Encapsulate/Decapsulate using RSA-KEM",
@@ -118,11 +118,7 @@ func main() {
 	)
 
 	if err := a.Run(os.Args[1:]...); err != nil {
-		die("%v", err)
+		fmt.Fprintln(os.Stderr, "error:", err)
+		os.Exit(1)
 	}
-}
-
-func die(format string, args ...any) {
-	fmt.Fprintln(os.Stderr, "error:", fmt.Sprintf(format, args...))
-	os.Exit(1)
 }
