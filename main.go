@@ -31,24 +31,24 @@ func main() {
 	a.Add(
 		"Key Encoding",
 		app.Command{
-			Name:  "rsa-pub-from-priv",
+			Name:  "rsa-priv2pub",
 			Usage: "Extract RSA public key from private key",
 			Run:   rsa.PubFromPrivCmd,
 		},
 		app.Command{
-			Name:  "rsa-raw-der",
+			Name:  "rsa-raw2der",
 			Usage: "Convert RSA key from raw values(n, e, d, p, q) to PKCS#1 ASN.1 DER",
 			Run:   rsa.RawDerCmd,
 		}, app.Command{
-			Name:  "rsa-der-raw",
+			Name:  "rsa-der2raw",
 			Usage: "Convert RSA key from PKCS#1 ASN.1 DER to raw values(n, e, d, p, q)",
 			Run:   rsa.DerRawCmd,
 		}, app.Command{
-			Name:  "rsa-pem-der",
+			Name:  "rsa-pem2der",
 			Usage: "Convert RSA key from PEM to PKCS#1 ASN.1 DER",
 			Run:   rsa.PemDerCmd,
 		}, app.Command{
-			Name:  "rsa-der-pem",
+			Name:  "rsa-der2pem",
 			Usage: "Convert RSA key from PKCS#1 ASN.1 DER to PEM",
 			Run:   rsa.DerPemCmd,
 		},
