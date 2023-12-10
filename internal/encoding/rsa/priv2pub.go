@@ -1,15 +1,14 @@
 package rsa
 
 import (
-	"bytes"
 	"crypto/x509"
 	"encoding/pem"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 
 	"bandr.me/p/pocryp/internal/encoding/rsa/util"
+	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
 func Priv2PubCmd(args ...string) error {
@@ -34,32 +33,18 @@ Options:
 		return err
 	}
 
-	in := os.Stdin
-	if *fInput != "" {
-		f, err := os.Open(*fInput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		in = f
+	sf, err := stdfile.New(*fInput, *fOutput)
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
-	}
-
-	var input bytes.Buffer
-	if _, err := io.Copy(&input, in); err != nil {
+	input, err := sf.Read()
+	if err != nil {
 		return err
 	}
 
-	privKey, err := util.PrivateKeyFromPem(input.Bytes())
+	privKey, err := util.PrivateKeyFromPem(input)
 	if err != nil {
 		return err
 	}
@@ -71,9 +56,5 @@ Options:
 		Bytes: x509.MarshalPKCS1PublicKey(&pubKey),
 	}
 
-	if err := pem.Encode(out, pubKeyBlock); err != nil {
-		return err
-	}
-
-	return nil
+	return pem.Encode(sf.Out, pubKeyBlock)
 }

@@ -1,14 +1,14 @@
 package aes
 
 import (
-	"bytes"
 	"crypto/aes"
 	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
+
+	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
 func EcbCmd(args ...string) error {
@@ -63,50 +63,31 @@ Options:
 		key = b
 	}
 
-	in := os.Stdin
-	if *fInput != "" {
-		f, err := os.Open(*fInput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		in = f
+	sf, err := stdfile.New(*fInput, *fOutput)
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
-	}
-
-	var input bytes.Buffer
-	if _, err := io.Copy(&input, in); err != nil {
+	input, err := sf.Read()
+	if err != nil {
 		return err
 	}
 
-	var err error
 	var output []byte
 	switch {
 	case *fEncrypt:
-		output, err = ecb(key, input.Bytes(), true)
+		output, err = ecb(key, input, true)
 	case *fDecrypt:
-		output, err = ecb(key, input.Bytes(), false)
+		output, err = ecb(key, input, false)
 	default:
-		output, err = ecb(key, input.Bytes(), true)
+		output, err = ecb(key, input, true)
 	}
 	if err != nil {
 		return err
 	}
 
-	if _, err := io.Copy(out, bytes.NewBuffer(output)); err != nil {
-		return err
-	}
-
-	return nil
+	return sf.Write(output, true)
 }
 
 func ecb(key, in []byte, direction bool) ([]byte, error) {

@@ -1,14 +1,13 @@
 package rsa
 
 import (
-	"bytes"
-	"encoding/hex"
 	"encoding/pem"
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
+
+	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
 func Pem2DerCmd(args ...string) error {
@@ -34,43 +33,21 @@ Options:
 		return err
 	}
 
-	in := os.Stdin
-	if *fInput != "" {
-		f, err := os.Open(*fInput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		in = f
+	sf, err := stdfile.New(*fInput, *fOutput)
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
-	}
-
-	var input bytes.Buffer
-	if _, err := io.Copy(&input, in); err != nil {
+	input, err := sf.Read()
+	if err != nil {
 		return err
 	}
 
-	block, _ := pem.Decode(input.Bytes())
+	block, _ := pem.Decode(input)
 	if block == nil {
 		return errors.New("failed to parse PEM block")
 	}
 
-	if *fPrintBin {
-		if _, err := io.Copy(out, bytes.NewBuffer(block.Bytes)); err != nil {
-			return err
-		}
-	} else {
-		fmt.Fprintln(out, hex.EncodeToString(block.Bytes))
-	}
-
-	return nil
+	return sf.Write(block.Bytes, *fPrintBin)
 }

@@ -1,16 +1,16 @@
 package cmd
 
 import (
-	"bytes"
 	"crypto/rsa"
 	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 
 	"bandr.me/p/pocryp/internal/common"
+	"bandr.me/p/pocryp/internal/util/stdfile"
+
 	rsautil "bandr.me/p/pocryp/internal/encoding/rsa/util"
 	kemrsa "bandr.me/p/pocryp/internal/kem/rsa"
 )
@@ -93,47 +93,29 @@ Options:
 		HashFunc: kdfHashFunc,
 	}
 
-	in := os.Stdin
-	if *fInput != "" {
-		f, err := os.Open(*fInput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		in = f
+	sf, err := stdfile.New(*fInput, *fOutput)
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
-	}
-
-	var input bytes.Buffer
-	if _, err := io.Copy(&input, in); err != nil {
+	input, err := sf.Read()
+	if err != nil {
 		return err
 	}
 
 	var output []byte
 	switch {
 	case *fEncapsulate:
-		output, err = kemrsa.Encapsulate(key.(*rsa.PublicKey), input.Bytes(), kdfParams)
+		output, err = kemrsa.Encapsulate(key.(*rsa.PublicKey), input, kdfParams)
 	case *fDecapsulate:
-		output, err = kemrsa.Decapsulate(key.(*rsa.PrivateKey), input.Bytes(), kdfParams)
+		output, err = kemrsa.Decapsulate(key.(*rsa.PrivateKey), input, kdfParams)
 	default:
-		output, err = kemrsa.Encapsulate(key.(*rsa.PublicKey), input.Bytes(), kdfParams)
+		output, err = kemrsa.Encapsulate(key.(*rsa.PublicKey), input, kdfParams)
 	}
 	if err != nil {
 		return err
 	}
 
-	if _, err := io.Copy(out, bytes.NewBuffer(output)); err != nil {
-		return err
-	}
-
-	return nil
+	return sf.Write(output, true)
 }

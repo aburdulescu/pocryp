@@ -1,17 +1,16 @@
 package kdf
 
 import (
-	"bytes"
 	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 
-	"golang.org/x/crypto/pbkdf2"
-
 	"bandr.me/p/pocryp/internal/common"
+	"bandr.me/p/pocryp/internal/util/stdfile"
+
+	"golang.org/x/crypto/pbkdf2"
 )
 
 func Pbkdf2Cmd(args ...string) error {
@@ -21,7 +20,6 @@ func Pbkdf2Cmd(args ...string) error {
 
 Derive a new key from the given key using PBKDF2.
 
-If -in is not specified, stdin will be read.
 If -out is not specified, the output will be printed to stdout.
 
 Options:
@@ -102,21 +100,13 @@ Options:
 		salt = b
 	}
 
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
+	sf, err := stdfile.New("", *fOutput)
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
 	output := pbkdf2.Key(key, salt, *fIter, *fLen, hashFunc)
 
-	if _, err := io.Copy(out, bytes.NewBuffer(output)); err != nil {
-		return err
-	}
-
-	return nil
+	return sf.Write(output, true)
 }

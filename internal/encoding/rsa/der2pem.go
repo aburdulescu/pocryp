@@ -1,13 +1,13 @@
 package rsa
 
 import (
-	"bytes"
 	"encoding/pem"
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
+
+	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
 func Der2PemCmd(args ...string) error {
@@ -36,28 +36,14 @@ Options:
 		return err
 	}
 
-	in := os.Stdin
-	if *fInput != "" {
-		f, err := os.Open(*fInput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		in = f
+	sf, err := stdfile.New(*fInput, *fOutput)
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
-	}
-
-	var input bytes.Buffer
-	if _, err := io.Copy(&input, in); err != nil {
+	input, err := sf.Read()
+	if err != nil {
 		return err
 	}
 
@@ -74,11 +60,8 @@ Options:
 
 	block := &pem.Block{
 		Type:  blockType,
-		Bytes: input.Bytes(),
-	}
-	if err := pem.Encode(out, block); err != nil {
-		return err
+		Bytes: input,
 	}
 
-	return nil
+	return pem.Encode(sf.Out, block)
 }

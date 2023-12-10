@@ -1,7 +1,6 @@
 package hash
 
 import (
-	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
@@ -9,6 +8,7 @@ import (
 	"os"
 
 	"bandr.me/p/pocryp/internal/common"
+	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
 func ShaCmd(args ...string) error {
@@ -40,25 +40,11 @@ Options:
 		return errors.New("hash alg not specified, use -alg")
 	}
 
-	in := os.Stdin
-	if *fInput != "" {
-		f, err := os.Open(*fInput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		in = f
+	sf, err := stdfile.New(*fInput, *fOutput)
+	if err != nil {
+		return err
 	}
-
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
-	}
+	defer sf.Close()
 
 	hashFunc, err := common.HashFuncFrom(*fAlg)
 	if err != nil {
@@ -68,19 +54,11 @@ Options:
 
 	h := hashFunc()
 
-	if _, err := io.Copy(h, in); err != nil {
+	if _, err := io.Copy(h, sf.In); err != nil {
 		return err
 	}
 
 	digest := h.Sum(nil)
 
-	if *fBin {
-		if _, err := out.Write(digest); err != nil {
-			return err
-		}
-	} else {
-		fmt.Fprintln(out, hex.EncodeToString(digest))
-	}
-
-	return nil
+	return sf.Write(digest, *fBin)
 }

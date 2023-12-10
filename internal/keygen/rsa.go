@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
 func Rsa(args ...string) error {
@@ -48,15 +50,11 @@ Options:
 		return errors.New("invalid num bits requested")
 	}
 
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
+	sf, err := stdfile.New("", *fOutput)
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
 	key, err := rsa.GenerateKey(rand.Reader, numBits)
 	if err != nil {
@@ -67,9 +65,6 @@ Options:
 		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(key),
 	}
-	if err := pem.Encode(out, block); err != nil {
-		return err
-	}
 
-	return nil
+	return pem.Encode(sf.Out, block)
 }

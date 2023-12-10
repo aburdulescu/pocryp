@@ -1,15 +1,15 @@
 package aes
 
 import (
-	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
+
+	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
 func GcmCmd(args ...string) error {
@@ -85,49 +85,31 @@ Options:
 		aad = b
 	}
 
-	in := os.Stdin
-	if *fInput != "" {
-		f, err := os.Open(*fInput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		in = f
+	sf, err := stdfile.New(*fInput, *fOutput)
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
-	}
-
-	var input bytes.Buffer
-	if _, err := io.Copy(&input, in); err != nil {
+	input, err := sf.Read()
+	if err != nil {
 		return err
 	}
 
 	var output []byte
 	switch {
 	case *fEncrypt:
-		output, err = gcm(key, iv, input.Bytes(), aad, true)
+		output, err = gcm(key, iv, input, aad, true)
 	case *fDecrypt:
-		output, err = gcm(key, iv, input.Bytes(), aad, false)
+		output, err = gcm(key, iv, input, aad, false)
 	default:
-		output, err = gcm(key, iv, input.Bytes(), aad, true)
+		output, err = gcm(key, iv, input, aad, true)
 	}
 	if err != nil {
 		return err
 	}
 
-	if _, err := io.Copy(out, bytes.NewBuffer(output)); err != nil {
-		return err
-	}
-
-	return nil
+	return sf.Write(output, true)
 }
 
 func gcm(key, nonce, in, additionalData []byte, direction bool) ([]byte, error) {

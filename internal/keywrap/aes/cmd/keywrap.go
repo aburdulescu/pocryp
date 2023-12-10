@@ -1,15 +1,14 @@
 package cmd
 
 import (
-	"bytes"
 	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 
 	"bandr.me/p/pocryp/internal/keywrap/aes"
+	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
 func Run(args ...string) error {
@@ -63,48 +62,29 @@ Options:
 		key = b
 	}
 
-	in := os.Stdin
-	if *fInput != "" {
-		f, err := os.Open(*fInput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		in = f
+	sf, err := stdfile.New(*fInput, *fOutput)
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
-	}
-
-	var input bytes.Buffer
-	if _, err := io.Copy(&input, in); err != nil {
+	input, err := sf.Read()
+	if err != nil {
 		return err
 	}
 
 	var output []byte
-	var err error
 	switch {
 	case *fWrap:
-		output, err = aes.Wrap(key, input.Bytes())
+		output, err = aes.Wrap(key, input)
 	case *fUnwrap:
-		output, err = aes.Unwrap(key, input.Bytes())
+		output, err = aes.Unwrap(key, input)
 	default:
-		output, err = aes.Wrap(key, input.Bytes())
+		output, err = aes.Wrap(key, input)
 	}
 	if err != nil {
 		return err
 	}
 
-	if _, err := io.Copy(out, bytes.NewBuffer(output)); err != nil {
-		return err
-	}
-
-	return nil
+	return sf.Write(output, true)
 }

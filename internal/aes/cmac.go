@@ -1,14 +1,14 @@
 package aes
 
 import (
-	"bytes"
 	"crypto/aes"
 	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
+
+	"bandr.me/p/pocryp/internal/util/stdfile"
 
 	"github.com/aead/cmac"
 )
@@ -64,28 +64,14 @@ Options:
 		key = b
 	}
 
-	in := os.Stdin
-	if *fInput != "" {
-		f, err := os.Open(*fInput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		in = f
+	sf, err := stdfile.New(*fInput, *fOutput)
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
-	}
-
-	var input bytes.Buffer
-	if _, err := io.Copy(&input, in); err != nil {
+	input, err := sf.Read()
+	if err != nil {
 		return err
 	}
 
@@ -94,20 +80,12 @@ Options:
 		return err
 	}
 
-	output, err := cmac.Sum(input.Bytes(), block, 16)
+	output, err := cmac.Sum(input, block, 16)
 	if err != nil {
 		return err
 	}
 
-	if *fBin {
-		if _, err := io.Copy(out, bytes.NewBuffer(output)); err != nil {
-			return err
-		}
-	} else {
-		fmt.Fprintln(out, hex.EncodeToString(output))
-	}
-
-	return nil
+	return sf.Write(output, *fBin)
 }
 
 func CmacVerifyCmd(args ...string) error {
@@ -167,18 +145,14 @@ Options:
 		return err
 	}
 
-	in := os.Stdin
-	if *fInput != "" {
-		f, err := os.Open(*fInput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		in = f
+	sf, err := stdfile.New(*fInput, "")
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
-	var input bytes.Buffer
-	if _, err := io.Copy(&input, in); err != nil {
+	input, err := sf.Read()
+	if err != nil {
 		return err
 	}
 
@@ -187,7 +161,7 @@ Options:
 		return err
 	}
 
-	valid := cmac.Verify(mac, input.Bytes(), block, 16)
+	valid := cmac.Verify(mac, input, block, 16)
 	if !valid {
 		return fmt.Errorf("not valid")
 	}

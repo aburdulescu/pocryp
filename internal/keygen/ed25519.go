@@ -2,10 +2,11 @@ package keygen
 
 import (
 	"crypto/ed25519"
-	"encoding/hex"
 	"flag"
 	"fmt"
 	"os"
+
+	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
 func Ed25519(args ...string) error {
@@ -29,28 +30,16 @@ Options:
 		return err
 	}
 
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
+	sf, err := stdfile.New("", *fOutput)
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
 	key, _, err := ed25519.GenerateKey(nil)
 	if err != nil {
 		return err
 	}
 
-	if *fBin {
-		if _, err := out.Write(key); err != nil {
-			return err
-		}
-	} else {
-		fmt.Fprintln(out, hex.EncodeToString(key))
-	}
-
-	return nil
+	return sf.Write(key, *fBin)
 }

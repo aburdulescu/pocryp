@@ -2,12 +2,13 @@ package keygen
 
 import (
 	"crypto/rand"
-	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"strconv"
+
+	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
 func Aes(args ...string) error {
@@ -48,28 +49,16 @@ Options:
 	}
 	numBits /= 8
 
-	out := os.Stdout
-	if *fOutput != "" {
-		f, err := os.Create(*fOutput)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
+	sf, err := stdfile.New("", *fOutput)
+	if err != nil {
+		return err
 	}
+	defer sf.Close()
 
 	output := make([]byte, numBits)
 	if _, err := rand.Read(output); err != nil {
 		return err
 	}
 
-	if *fBin {
-		if _, err := out.Write(output); err != nil {
-			return err
-		}
-	} else {
-		fmt.Fprintln(out, hex.EncodeToString(output))
-	}
-
-	return nil
+	return sf.Write(output, *fBin)
 }

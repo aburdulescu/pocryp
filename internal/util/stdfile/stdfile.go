@@ -9,7 +9,7 @@ import (
 )
 
 type StdFile struct {
-	in    *os.File
+	In    *os.File
 	stdin bool
 
 	Out    *os.File
@@ -20,14 +20,14 @@ func New(infile, outfile string) (*StdFile, error) {
 	var r StdFile
 
 	if infile == "" {
-		r.in = os.Stdin
+		r.In = os.Stdin
 		r.stdin = true
 	} else {
 		f, err := os.Open(infile)
 		if err != nil {
 			return nil, err
 		}
-		r.in = f
+		r.In = f
 		r.stdin = false
 	}
 
@@ -48,7 +48,7 @@ func New(infile, outfile string) (*StdFile, error) {
 
 func (f *StdFile) Close() error {
 	if !f.stdin {
-		if err := f.in.Close(); err != nil {
+		if err := f.In.Close(); err != nil {
 			return err
 		}
 	}
@@ -62,7 +62,7 @@ func (f *StdFile) Close() error {
 
 func (f *StdFile) Read() ([]byte, error) {
 	var input bytes.Buffer
-	if _, err := io.Copy(&input, f.in); err != nil {
+	if _, err := io.Copy(&input, f.In); err != nil {
 		return nil, err
 	}
 	return input.Bytes(), nil
