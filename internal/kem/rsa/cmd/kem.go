@@ -11,8 +11,8 @@ import (
 	"os"
 
 	"bandr.me/p/pocryp/internal/common"
+	rsautil "bandr.me/p/pocryp/internal/encoding/rsa/util"
 	kemrsa "bandr.me/p/pocryp/internal/kem/rsa"
-	rsautil "bandr.me/p/pocryp/internal/rsa/util"
 )
 
 func Run(args ...string) error {

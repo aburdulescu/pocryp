@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"bandr.me/p/pocryp/internal/rsa/util"
+	"bandr.me/p/pocryp/internal/encoding/rsa/util"
 	"bandr.me/p/pocryp/internal/testutil"
 )
 

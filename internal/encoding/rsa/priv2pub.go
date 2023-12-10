@@ -2,21 +2,22 @@ package rsa
 
 import (
 	"bytes"
-	"encoding/hex"
+	"crypto/x509"
 	"encoding/pem"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"os"
+
+	"bandr.me/p/pocryp/internal/encoding/rsa/util"
 )
 
-func PemDerCmd(args ...string) error {
-	fset := flag.NewFlagSet("rsa-pem-der", flag.ContinueOnError)
+func Priv2PubCmd(args ...string) error {
+	fset := flag.NewFlagSet("rsa-priv2pub", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-pem-der [-in INPUT] [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-priv2pub [-in INPUT] [-out OUTPUT]
 
-Convert RSA key from PEM to PKCS#1 ASN.1 DER.
+Extract RSA public key from private key, specified as PEM.
 
 If -in is not specified, stdin will be read.
 If -out is not specified, the output will be printed to stdout.
@@ -28,7 +29,6 @@ Options:
 
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
 	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
-	fPrintBin := fset.Bool("bin", false, "Print output in binary form.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
@@ -63,17 +63,20 @@ Options:
 		return err
 	}
 
-	block, _ := pem.Decode(input.Bytes())
-	if block == nil {
-		return errors.New("failed to parse PEM block")
+	privKey, err := util.PrivateKeyFromPem(input.Bytes())
+	if err != nil {
+		return err
 	}
 
-	if *fPrintBin {
-		if _, err := io.Copy(w, bytes.NewBuffer(block.Bytes)); err != nil {
-			return err
-		}
-	} else {
-		fmt.Fprintln(w, hex.EncodeToString(block.Bytes))
+	pubKey := privKey.PublicKey
+
+	pubKeyBlock := &pem.Block{
+		Type:  "RSA PUBLIC KEY",
+		Bytes: x509.MarshalPKCS1PublicKey(&pubKey),
+	}
+
+	if err := pem.Encode(w, pubKeyBlock); err != nil {
+		return err
 	}
 
 	return nil

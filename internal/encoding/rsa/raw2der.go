@@ -11,10 +11,10 @@ import (
 	"os"
 )
 
-func RawDerCmd(args ...string) error {
-	fset := flag.NewFlagSet("rsa-raw-der", flag.ContinueOnError)
+func Raw2DerCmd(args ...string) error {
+	fset := flag.NewFlagSet("rsa-raw2der", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-raw-der [-priv|-pub] -n modulus [-e publicExponent] -d privateExponent [-p prime1 -q prime2]
+		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-raw2der [-priv|-pub] -n modulus [-e publicExponent] -d privateExponent [-p prime1 -q prime2]
 
 Convert RSA key from raw values(n, e, d, p, q) to PKCS#1 ASN.1 DER.
 

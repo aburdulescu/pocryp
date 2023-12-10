@@ -9,8 +9,8 @@ import (
 	"bandr.me/p/pocryp/internal/hash"
 	"bandr.me/p/pocryp/internal/kdf"
 	"bandr.me/p/pocryp/internal/keygen"
-	"bandr.me/p/pocryp/internal/rsa"
 
+	encoding_rsa "bandr.me/p/pocryp/internal/encoding/rsa"
 	kem_rsa_cmd "bandr.me/p/pocryp/internal/kem/rsa/cmd"
 	keywrap_aes_cmd "bandr.me/p/pocryp/internal/keywrap/aes/cmd"
 )
@@ -42,24 +42,24 @@ func main() {
 		app.Command{
 			Name:  "rsa-priv2pub",
 			Usage: "Extract RSA public key from private key",
-			Run:   rsa.PubFromPrivCmd,
+			Run:   encoding_rsa.Priv2PubCmd,
 		},
 		app.Command{
 			Name:  "rsa-raw2der",
 			Usage: "Convert RSA key from raw values(n, e, d, p, q) to PKCS#1 ASN.1 DER",
-			Run:   rsa.RawDerCmd,
+			Run:   encoding_rsa.Raw2DerCmd,
 		}, app.Command{
 			Name:  "rsa-der2raw",
 			Usage: "Convert RSA key from PKCS#1 ASN.1 DER to raw values(n, e, d, p, q)",
-			Run:   rsa.DerRawCmd,
+			Run:   encoding_rsa.Der2RawCmd,
 		}, app.Command{
 			Name:  "rsa-pem2der",
 			Usage: "Convert RSA key from PEM to PKCS#1 ASN.1 DER",
-			Run:   rsa.PemDerCmd,
+			Run:   encoding_rsa.Pem2DerCmd,
 		}, app.Command{
 			Name:  "rsa-der2pem",
 			Usage: "Convert RSA key from PKCS#1 ASN.1 DER to PEM",
-			Run:   rsa.DerPemCmd,
+			Run:   encoding_rsa.Der2PemCmd,
 		},
 	)
 
