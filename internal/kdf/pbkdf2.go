@@ -1,13 +1,12 @@
 package kdf
 
 import (
-	"encoding/hex"
-	"errors"
 	"flag"
 	"fmt"
 	"os"
 
 	"bandr.me/p/pocryp/internal/common"
+	"bandr.me/p/pocryp/internal/util"
 	"bandr.me/p/pocryp/internal/util/stdfile"
 
 	"golang.org/x/crypto/pbkdf2"
@@ -44,60 +43,22 @@ Options:
 		return err
 	}
 
-	if *fKey == "" && *fKeyFile == "" {
+	key, err := util.FileOrHex(*fKeyFile, *fKey)
+	if err != nil {
 		fset.Usage()
-		return errors.New("no key specified, use -key or -key-file to specify it")
-	}
-	if *fKey != "" && *fKeyFile != "" {
-		fset.Usage()
-		return errors.New("cannot use -key and -key-file at the same time")
+		return fmt.Errorf("key: %w", err)
 	}
 
-	if *fSalt == "" && *fSaltFile == "" {
+	salt, err := util.FileOrHex(*fSaltFile, *fSalt)
+	if err != nil {
 		fset.Usage()
-		return errors.New("no salt specified, use -salt or -salt-file to specify it")
-	}
-	if *fSalt != "" && *fSaltFile != "" {
-		fset.Usage()
-		return errors.New("cannot use -salt and -salt-file at the same time")
+		return fmt.Errorf("salt: %w", err)
 	}
 
 	hashFunc, err := common.HashFuncFrom(*fHashFunc)
 	if err != nil {
 		fset.Usage()
 		return err
-	}
-
-	var key []byte
-	if *fKey != "" {
-		b, err := hex.DecodeString(*fKey)
-		if err != nil {
-			return err
-		}
-		key = b
-	}
-	if *fKeyFile != "" {
-		b, err := os.ReadFile(*fKeyFile)
-		if err != nil {
-			return err
-		}
-		key = b
-	}
-
-	var salt []byte
-	if *fSalt != "" {
-		b, err := hex.DecodeString(*fSalt)
-		if err != nil {
-			return err
-		}
-		salt = b
-	}
-	if *fSaltFile != "" {
-		b, err := os.ReadFile(*fSaltFile)
-		if err != nil {
-			return err
-		}
-		salt = b
 	}
 
 	sf, err := stdfile.New("", *fOutput)

@@ -1,5 +1,5 @@
-* todo [1/4]
-** TODO unify key reading(general code for reading from file or hex)
+* todo [2/4]
+** TODO use FileOrHex
 ** TODO add -bin wherever needed
-** TODO use stdfile everywhere
+** DONE use stdfile everywhere
 ** DONE split RSA-KEM and AES-KEYWRAP into actual pkg and cmd pkg

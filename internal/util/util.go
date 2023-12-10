@@ -1,7 +1,9 @@
 package util
 
 import (
+	"encoding/hex"
 	"errors"
+	"os"
 )
 
 func BitLenToByteLen(n int) int {
@@ -28,4 +30,18 @@ func Xor(dst, l, r []byte) error {
 		dst[i] = l[i] ^ r[i]
 	}
 	return nil
+}
+
+func FileOrHex(filePath, hexStr string) ([]byte, error) {
+	if filePath == "" && hexStr == "" {
+		return nil, errors.New("neither file path nor hex string specified")
+	}
+	if filePath != "" && hexStr != "" {
+		return nil, errors.New("cannot specify file path and hex string at the same time")
+	}
+	if hexStr != "" {
+		return hex.DecodeString(hexStr)
+	} else {
+		return os.ReadFile(filePath)
+	}
 }
