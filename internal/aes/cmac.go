@@ -64,32 +64,28 @@ Options:
 		key = b
 	}
 
-	var r io.Reader
-	if *fInput == "" {
-		r = os.Stdin
-	} else {
+	in := os.Stdin
+	if *fInput != "" {
 		f, err := os.Open(*fInput)
 		if err != nil {
 			return err
 		}
 		defer f.Close()
-		r = f
+		in = f
 	}
 
-	var w io.Writer
-	if *fOutput == "" {
-		w = os.Stdout
-	} else {
+	out := os.Stdout
+	if *fOutput != "" {
 		f, err := os.Create(*fOutput)
 		if err != nil {
 			return err
 		}
 		defer f.Close()
-		w = f
+		out = f
 	}
 
 	var input bytes.Buffer
-	if _, err := io.Copy(&input, r); err != nil {
+	if _, err := io.Copy(&input, in); err != nil {
 		return err
 	}
 
@@ -104,11 +100,11 @@ Options:
 	}
 
 	if *fBin {
-		if _, err := io.Copy(w, bytes.NewBuffer(output)); err != nil {
+		if _, err := io.Copy(out, bytes.NewBuffer(output)); err != nil {
 			return err
 		}
 	} else {
-		fmt.Fprintln(w, hex.EncodeToString(output))
+		fmt.Fprintln(out, hex.EncodeToString(output))
 	}
 
 	return nil
@@ -171,20 +167,18 @@ Options:
 		return err
 	}
 
-	var r io.Reader
-	if *fInput == "" {
-		r = os.Stdin
-	} else {
+	in := os.Stdin
+	if *fInput != "" {
 		f, err := os.Open(*fInput)
 		if err != nil {
 			return err
 		}
 		defer f.Close()
-		r = f
+		in = f
 	}
 
 	var input bytes.Buffer
-	if _, err := io.Copy(&input, r); err != nil {
+	if _, err := io.Copy(&input, in); err != nil {
 		return err
 	}
 

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 	"strconv"
 )
@@ -49,16 +48,14 @@ Options:
 	}
 	numBits /= 8
 
-	var w io.Writer
-	if *fOutput == "" {
-		w = os.Stdout
-	} else {
+	out := os.Stdout
+	if *fOutput != "" {
 		f, err := os.Create(*fOutput)
 		if err != nil {
 			return err
 		}
 		defer f.Close()
-		w = f
+		out = f
 	}
 
 	output := make([]byte, numBits)
@@ -67,11 +64,11 @@ Options:
 	}
 
 	if *fBin {
-		if _, err := w.Write(output); err != nil {
+		if _, err := out.Write(output); err != nil {
 			return err
 		}
 	} else {
-		fmt.Fprintln(w, hex.EncodeToString(output))
+		fmt.Fprintln(out, hex.EncodeToString(output))
 	}
 
 	return nil

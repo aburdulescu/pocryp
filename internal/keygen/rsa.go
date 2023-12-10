@@ -8,7 +8,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 	"strconv"
 )
@@ -49,16 +48,14 @@ Options:
 		return errors.New("invalid num bits requested")
 	}
 
-	var w io.Writer
-	if *fOutput == "" {
-		w = os.Stdout
-	} else {
+	out := os.Stdout
+	if *fOutput != "" {
 		f, err := os.Create(*fOutput)
 		if err != nil {
 			return err
 		}
 		defer f.Close()
-		w = f
+		out = f
 	}
 
 	key, err := rsa.GenerateKey(rand.Reader, numBits)
@@ -70,7 +67,7 @@ Options:
 		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(key),
 	}
-	if err := pem.Encode(w, block); err != nil {
+	if err := pem.Encode(out, block); err != nil {
 		return err
 	}
 

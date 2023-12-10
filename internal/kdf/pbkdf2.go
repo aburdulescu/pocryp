@@ -102,21 +102,19 @@ Options:
 		salt = b
 	}
 
-	var w io.Writer
-	if *fOutput == "" {
-		w = os.Stdout
-	} else {
+	out := os.Stdout
+	if *fOutput != "" {
 		f, err := os.Create(*fOutput)
 		if err != nil {
 			return err
 		}
 		defer f.Close()
-		w = f
+		out = f
 	}
 
 	output := pbkdf2.Key(key, salt, *fIter, *fLen, hashFunc)
 
-	if _, err := io.Copy(w, bytes.NewBuffer(output)); err != nil {
+	if _, err := io.Copy(out, bytes.NewBuffer(output)); err != nil {
 		return err
 	}
 

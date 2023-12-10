@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 )
 
@@ -30,16 +29,14 @@ Options:
 		return err
 	}
 
-	var w io.Writer
-	if *fOutput == "" {
-		w = os.Stdout
-	} else {
+	out := os.Stdout
+	if *fOutput != "" {
 		f, err := os.Create(*fOutput)
 		if err != nil {
 			return err
 		}
 		defer f.Close()
-		w = f
+		out = f
 	}
 
 	key, _, err := ed25519.GenerateKey(nil)
@@ -48,11 +45,11 @@ Options:
 	}
 
 	if *fBin {
-		if _, err := w.Write(key); err != nil {
+		if _, err := out.Write(key); err != nil {
 			return err
 		}
 	} else {
-		fmt.Fprintln(w, hex.EncodeToString(key))
+		fmt.Fprintln(out, hex.EncodeToString(key))
 	}
 
 	return nil
