@@ -30,6 +30,11 @@ func main() {
 			Usage: "Generate RSA key",
 			Run:   keygen.Rsa,
 		},
+		app.Command{
+			Name:  "gen-ed25519",
+			Usage: "Generate ED25519 key",
+			Run:   keygen.Ed25519,
+		},
 	)
 
 	a.Add(

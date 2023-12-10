@@ -2,6 +2,7 @@
 
 - [x] AES
 - [x] RSA
+- [x] ED25519
 
 # Block Cipher
 
