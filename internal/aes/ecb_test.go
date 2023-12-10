@@ -50,6 +50,7 @@ func testEcbCmd(t *testing.T, tmp string, direction string, key, input, expected
 		args = append(args, direction)
 	}
 	args = append(args,
+		"-bin",
 		"-key", hex.EncodeToString(key),
 		"-in", in,
 		"-out", out,

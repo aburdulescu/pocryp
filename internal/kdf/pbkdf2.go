@@ -15,7 +15,7 @@ import (
 func Pbkdf2Cmd(args ...string) error {
 	fset := flag.NewFlagSet("kdf-pbkdf2", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp kdf-pbkdf2 -key|-key-file -salt|-salt-file -iter -len -hash [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp kdf-pbkdf2 [-bin] -key|-key-file -salt|-salt-file -iter -len -hash [-out OUTPUT]
 
 Derive a new key from the given key using PBKDF2.
 
@@ -38,6 +38,7 @@ Options:
 		common.AlgSHA256,
 		fmt.Sprintf("Hash function(valid options: %s).", common.SHAAlgs),
 	)
+	fBin := fset.Bool("bin", false, "Print output in binary form not hex.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
@@ -69,5 +70,5 @@ Options:
 
 	output := pbkdf2.Key(key, salt, *fIter, *fLen, hashFunc)
 
-	return sf.Write(output, true)
+	return sf.Write(output, *fBin)
 }

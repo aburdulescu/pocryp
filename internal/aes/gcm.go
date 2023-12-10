@@ -16,7 +16,7 @@ import (
 func GcmCmd(args ...string) error {
 	fset := flag.NewFlagSet("aes-gcm", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp aes-gcm [-e/-d] -key|-key-file -iv -aad [-in INPUT] [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp aes-gcm [-bin] [-e/-d] -key|-key-file -iv -aad [-in INPUT] [-out OUTPUT]
 
 Encrypt/Decrypt INPUT to OUTPUT using AES-GCM.
 
@@ -36,6 +36,7 @@ Options:
 	fKeyFile := fset.String("key-file", "", "File which contains the key as binary/text.")
 	fIV := fset.String("iv", "", "IV as hex.")
 	fAAD := fset.String("aad", "", "File which contains additional associated data as binary/text.")
+	fBin := fset.Bool("bin", false, "Print output in binary form not hex.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
@@ -89,7 +90,7 @@ Options:
 		return err
 	}
 
-	return sf.Write(output, true)
+	return sf.Write(output, *fBin)
 }
 
 func gcm(key, nonce, in, additionalData []byte, direction bool) ([]byte, error) {

@@ -14,7 +14,7 @@ import (
 func EcbCmd(args ...string) error {
 	fset := flag.NewFlagSet("aes-ecb", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp aes-ecb [-e/-d] -key|-key-file [-in INPUT] [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp aes-ecb [-bin] [-e/-d] -key|-key-file [-in INPUT] [-out OUTPUT]
 
 Encrypt/Decrypt INPUT to OUTPUT using AES-ECB.
 
@@ -32,6 +32,7 @@ Options:
 	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
 	fKey := fset.String("key", "", "Key as hex.")
 	fKeyFile := fset.String("key-file", "", "File which contains the key as binary/text.")
+	fBin := fset.Bool("bin", false, "Print output in binary form not hex.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
@@ -66,7 +67,7 @@ Options:
 		return err
 	}
 
-	return sf.Write(output, true)
+	return sf.Write(output, *fBin)
 }
 
 func ecb(key, in []byte, direction bool) ([]byte, error) {

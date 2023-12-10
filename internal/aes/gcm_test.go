@@ -58,6 +58,7 @@ func testGcm(t *testing.T, tmp string, direction string, key, nonce, aad, input,
 		args = append(args, direction)
 	}
 	args = append(args,
+		"-bin",
 		"-key", hex.EncodeToString(key),
 		"-iv", hex.EncodeToString(nonce),
 		"-in", in,

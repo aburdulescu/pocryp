@@ -1,6 +1,6 @@
-* todo [3/5]
-** TODO add -bin wherever needed
+* todo [4/5]
 ** TODO add some sort of abstraction for adding subcommands
+** DONE add -bin wherever needed
 ** DONE use FileOrHex
 ** DONE use stdfile everywhere
 ** DONE split RSA-KEM and AES-KEYWRAP into actual pkg and cmd pkg

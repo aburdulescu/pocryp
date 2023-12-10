@@ -18,7 +18,7 @@ import (
 func Run(args ...string) error {
 	fset := flag.NewFlagSet("kem-rsa", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp kem-rsa [-e/-d] -key [-in INPUT] [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp kem-rsa [-bin] [-e/-d] -key [-in INPUT] [-out OUTPUT]
 
 Encapsulate/Decapsulate INPUT to OUTPUT using RSA-KEM.
 
@@ -43,6 +43,7 @@ Options:
 		common.AlgSHA256,
 		fmt.Sprintf("KDF hash function(valid options: %s).", common.SHAAlgs),
 	)
+	fBin := fset.Bool("bin", false, "Print output in binary form not hex.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
@@ -117,5 +118,5 @@ Options:
 		return err
 	}
 
-	return sf.Write(output, true)
+	return sf.Write(output, *fBin)
 }

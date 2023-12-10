@@ -59,6 +59,7 @@ func TestPbkdf2Cmd(t *testing.T) {
 			}
 			defer f.Close()
 			args := []string{
+				"-bin",
 				"-key", hex.EncodeToString(tv.p),
 				"-salt", hex.EncodeToString(tv.s),
 				"-iter", fmt.Sprintf("%d", tv.c),

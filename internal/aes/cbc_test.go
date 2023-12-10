@@ -57,6 +57,7 @@ func testCbcCmd(t *testing.T, tmp string, direction string, key, iv, input, expe
 		args = append(args, direction)
 	}
 	args = append(args,
+		"-bin",
 		"-key", hex.EncodeToString(key),
 		"-iv", hex.EncodeToString(iv),
 		"-in", in,

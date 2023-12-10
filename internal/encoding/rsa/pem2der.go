@@ -13,7 +13,7 @@ import (
 func Pem2DerCmd(args ...string) error {
 	fset := flag.NewFlagSet("rsa-pem2der", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-pem2der [-in INPUT] [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-pem2der [-bin] [-in INPUT] [-out OUTPUT]
 
 Convert RSA key from PEM to PKCS#1 ASN.1 DER.
 
@@ -27,7 +27,7 @@ Options:
 
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
 	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
-	fPrintBin := fset.Bool("bin", false, "Print output in binary form.")
+	fBin := fset.Bool("bin", false, "Write output as binary not hex.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
@@ -49,5 +49,5 @@ Options:
 		return errors.New("failed to parse PEM block")
 	}
 
-	return sf.Write(block.Bytes, *fPrintBin)
+	return sf.Write(block.Bytes, *fBin)
 }

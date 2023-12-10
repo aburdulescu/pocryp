@@ -13,7 +13,7 @@ import (
 func Run(args ...string) error {
 	fset := flag.NewFlagSet("aes-keywrap", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp aes-keywrap [-w/-u] -key/-key-file [-in INPUT] [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp aes-keywrap [-bin] [-w/-u] -key/-key-file [-in INPUT] [-out OUTPUT]
 
 Wrap/Unwrap INPUT to OUTPUT using AES-KEYWRAP.
 
@@ -31,6 +31,7 @@ Options:
 	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
 	fKey := fset.String("key", "", "Key as hex.")
 	fKeyFile := fset.String("key-file", "", "File which contains the key as binary/text.")
+	fBin := fset.Bool("bin", false, "Print output in binary form not hex.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
@@ -65,5 +66,5 @@ Options:
 		return err
 	}
 
-	return sf.Write(output, true)
+	return sf.Write(output, *fBin)
 }

@@ -16,7 +16,7 @@ import (
 func CbcCmd(args ...string) error {
 	fset := flag.NewFlagSet("aes-cbc", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp aes-cbc [-e/-d] -key/-key-file -iv [-in INPUT] [-out OUTPUT]
+		fmt.Fprint(os.Stderr, `Usage: pocryp aes-cbc [-bin] [-e/-d] -key/-key-file -iv [-in INPUT] [-out OUTPUT]
 
 Encrypt/Decrypt INPUT to OUTPUT using AES-CBC.
 
@@ -35,6 +35,7 @@ Options:
 	fKey := fset.String("key", "", "Key as hex.")
 	fKeyFile := fset.String("key-file", "", "File which contains the key as binary/text.")
 	fIV := fset.String("iv", "", "IV as hex.")
+	fBin := fset.Bool("bin", false, "Print output in binary form not hex.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
@@ -81,11 +82,7 @@ Options:
 
 	output := cbcProcessBlocks(c, input)
 
-	if err := sf.Write(output, true); err != nil {
-		return err
-	}
-
-	return nil
+	return sf.Write(output, *fBin)
 }
 
 func newCBCEncrypter(key, iv []byte) (cipher.BlockMode, error) {
