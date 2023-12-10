@@ -11,8 +11,8 @@ import (
 	"bandr.me/p/pocryp/internal/keygen"
 	"bandr.me/p/pocryp/internal/rsa"
 
-	kemrsa "bandr.me/p/pocryp/internal/kem/rsa"
-	kwaes "bandr.me/p/pocryp/internal/keywrap/aes"
+	kem_rsa_cmd "bandr.me/p/pocryp/internal/kem/rsa/cmd"
+	keywrap_aes_cmd "bandr.me/p/pocryp/internal/keywrap/aes/cmd"
 )
 
 func main() {
@@ -104,7 +104,7 @@ func main() {
 		app.Command{
 			Name:  "aes-keywrap",
 			Usage: "Wrap/Unwrap using AES-KEYWRAP",
-			Run:   kwaes.Cmd,
+			Run:   keywrap_aes_cmd.Run,
 		},
 	)
 
@@ -131,7 +131,7 @@ func main() {
 		app.Command{
 			Name:  "kem-rsa",
 			Usage: "Encapsulate/Decapsulate using RSA-KEM",
-			Run:   kemrsa.Cmd,
+			Run:   kem_rsa_cmd.Run,
 		},
 	)
 
