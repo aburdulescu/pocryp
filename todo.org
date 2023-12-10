@@ -1,2 +1,3 @@
-* todo [0/1]
-** TODO split RSA-KEM and AES-KEYWRAP into actual pkg and cmd pkg
+* todo [1/2]
+** TODO use stdfile everywhere
+** DONE split RSA-KEM and AES-KEYWRAP into actual pkg and cmd pkg
