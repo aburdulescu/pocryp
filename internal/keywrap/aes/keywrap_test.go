@@ -1,146 +1,13 @@
-package kw
+package aes
 
 import (
-	"crypto/aes"
-	"crypto/subtle"
-	"encoding/binary"
-	"errors"
+	"bytes"
+	"encoding/hex"
+	"path/filepath"
+	"testing"
 
-	"bandr.me/p/pocryp/internal/util"
+	"bandr.me/p/pocryp/internal/testutil"
 )
-
-var aesKeyWrapDefaultIV = []byte{0xA6, 0xA6, 0xA6, 0xA6, 0xA6, 0xA6, 0xA6, 0xA6}
-
-func Wrap(kek, plaintext []byte) ([]byte, error) {
-	// RFC 3394 Key Wrap - 2.2.1 (index method)
-
-	const blkSize = 8
-
-	P := plaintext
-
-	if len(P)%blkSize != 0 {
-		return nil, errors.New("plaintext not 8 byte aligned")
-	}
-
-	block, err := aes.NewCipher(kek)
-	if err != nil {
-		return nil, err
-	}
-
-	n := len(P) / blkSize
-
-	// 1) Initialize variables.
-	var bufA [blkSize]byte
-	A := bufA[:]
-	copy(A, aesKeyWrapDefaultIV)
-
-	R := make([][blkSize]byte, n)
-	for i := range R {
-		copy(R[i][:], P[i*blkSize:])
-	}
-
-	// AES block
-	var bufB [16]byte
-	B := bufB[:]
-
-	//  2) Calculate intermediate values.
-	for j := 0; j <= 5; j++ {
-		for i := 1; i <= n; i++ {
-			// B = A | R[i]
-			if err := util.Concat(B, A, R[i-1][:]); err != nil {
-				return nil, err
-			}
-
-			// B = AES(K, A | R[i])
-			block.Encrypt(B, B)
-
-			t := uint64((n * j) + i)
-			msbB := binary.BigEndian.Uint64(B[:blkSize])
-
-			// A = MSB(64, B) ^ t
-			binary.BigEndian.PutUint64(A, msbB^t)
-
-			lsbB := B[blkSize:]
-			copy(R[i-1][:], lsbB)
-		}
-	}
-
-	// 3) Output the results.
-
-	// C = A + R
-	C := make([]byte, (n+1)*blkSize)
-	copy(C, A)
-	for i := 0; i < n; i++ {
-		copy(C[(i+1)*blkSize:], R[i][:])
-	}
-
-	return C, nil
-}
-
-func Unwrap(kek, ciphertext []byte) ([]byte, error) {
-	// RFC 3394 Key Unwrap - 2.2.2 (index method)
-
-	const blkSize = 8
-
-	block, err := aes.NewCipher(kek)
-	if err != nil {
-		return nil, err
-	}
-
-	C := ciphertext
-	n := (len(C) / blkSize) - 1
-
-	// 1) Initialize variables.
-	var bufA [blkSize]byte
-	A := bufA[:]
-	copy(A, C[:blkSize])
-
-	R := make([][blkSize]byte, n)
-	for i := range R {
-		copy(R[i][:], C[(i+1)*8:])
-	}
-
-	// AES block
-	var bufB [16]byte
-	B := bufB[:]
-
-	var bufT [blkSize]byte
-	T := bufT[:]
-
-	// 2) Compute intermediate values.
-	for j := 5; j >= 0; j-- {
-		for i := n; i >= 1; i-- {
-			t := uint64((n * j) + i)
-			binary.BigEndian.PutUint64(T, t)
-
-			// B = AES-1(K, (A ^ t) | R[i])
-			if err := util.Xor(B[:blkSize], A, T); err != nil {
-				return nil, err
-			}
-			copy(B[blkSize:], R[i-1][:])
-			block.Decrypt(B, B)
-
-			// A = MSB(64, B)
-			copy(A, B[:blkSize])
-
-			// R[i] = LSB(64, B)
-			copy(R[i-1][:], B[blkSize:])
-		}
-	}
-
-	if subtle.ConstantTimeCompare(A, aesKeyWrapDefaultIV) != 1 {
-		return nil, errors.New("integrity check failed - unexpected IV")
-	}
-
-	// 3) Output results.
-
-	P := make([]byte, n*blkSize)
-	for i := range R {
-		copy(P[i*blkSize:], R[i][:])
-	}
-
-	return P, nil
-}
 
 type TestVector struct {
 	Name       string
@@ -187,4 +54,114 @@ var TestVectors = []TestVector{
 		Plaintext:  []byte{0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F},
 		Ciphertext: []byte{0x28, 0xC9, 0xF4, 0x04, 0xC4, 0xB8, 0x10, 0xF4, 0xCB, 0xCC, 0xB3, 0x5C, 0xFB, 0x87, 0xF8, 0x26, 0x3F, 0x57, 0x86, 0xE2, 0xD8, 0x0E, 0xD3, 0x26, 0xCB, 0xC7, 0xF0, 0xE7, 0x1A, 0x99, 0xF4, 0x3B, 0xFB, 0x98, 0x8B, 0x9B, 0x7A, 0x02, 0xDD, 0x21},
 	},
+}
+
+func TestCmd(t *testing.T) {
+	tmp := t.TempDir()
+	for _, tv := range TestVectors {
+		t.Run("Wrap-"+tv.Name, func(t *testing.T) {
+			testCmd(t, tmp, "-w", tv.Kek, tv.Plaintext, tv.Ciphertext)
+		})
+		t.Run("Unwrap-"+tv.Name, func(t *testing.T) {
+			testCmd(t, tmp, "-u", tv.Kek, tv.Ciphertext, tv.Plaintext)
+		})
+		t.Run("Default-"+tv.Name, func(t *testing.T) {
+			testCmd(t, tmp, "", tv.Kek, tv.Plaintext, tv.Ciphertext)
+		})
+	}
+	t.Run("NoKey", func(t *testing.T) {
+		if err := Cmd(); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	t.Run("KeyAsHexAndFromFile", func(t *testing.T) {
+		if err := Cmd("-key=0011", "-key-file=foo"); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+}
+
+func testCmd(t *testing.T, tmp string, direction string, key, input, expected []byte) {
+	out := filepath.Join(tmp, "out")
+	in := filepath.Join(tmp, "in")
+	testutil.SetupInOut(t, in, out, input)
+	var args []string
+	if direction != "" {
+		args = append(args, direction)
+	}
+	args = append(args,
+		"-key", hex.EncodeToString(key),
+		"-in", in,
+		"-out", out,
+	)
+	if err := Cmd(args...); err != nil {
+		t.Fatal(err)
+	}
+	testutil.ExpectFileContent(t, out, expected)
+}
+
+func BenchmarkAesKeyWrap(b *testing.B) {
+	kek := bytesFromHexT(b, "000102030405060708090A0B0C0D0E0F")
+	data := bytesFromHexT(b, "00112233445566778899AABBCCDDEEFF")
+	for i := 0; i < b.N; i++ {
+		out, err := Wrap(kek, data)
+		if err != nil {
+			b.Fatal(err)
+		}
+		_, err = Unwrap(kek, out)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func TestKeyWrap(t *testing.T) {
+	t.Run("WrapInvalidPlaintext", func(t *testing.T) {
+		if _, err := Wrap(nil, []byte{0}); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	t.Run("WrapInvalidKey", func(t *testing.T) {
+		plaintext := []byte{0, 1, 2, 3, 4, 5, 6, 7}
+		if _, err := Wrap([]byte{0}, plaintext); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	t.Run("UnwrapInvalidKey", func(t *testing.T) {
+		plaintext := []byte{0, 1, 2, 3, 4, 5, 6, 7}
+		if _, err := Unwrap([]byte{0}, plaintext); err == nil {
+			t.Fatal("expected and error")
+		}
+	})
+	for _, v := range TestVectors {
+		t.Run(v.Name, func(t *testing.T) {
+			actualCiphertext, err := Wrap(v.Kek, v.Plaintext)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !bytes.Equal(v.Ciphertext, actualCiphertext) {
+				t.Log(hex.EncodeToString(v.Ciphertext))
+				t.Log(hex.EncodeToString(actualCiphertext))
+				t.Fatal("not equal")
+			}
+			actualPlaintext, err := Unwrap(v.Kek, v.Ciphertext)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !bytes.Equal(v.Plaintext, actualPlaintext) {
+				t.Log(hex.EncodeToString(v.Plaintext))
+				t.Log(hex.EncodeToString(actualPlaintext))
+				t.Fatal("not equal")
+			}
+		})
+	}
+}
+
+func bytesFromHexT(t testing.TB, s string) []byte {
+	t.Helper()
+	r, err := hex.DecodeString(s)
+	if err != nil {
+		panic(err)
+	}
+	return r
 }

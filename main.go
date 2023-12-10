@@ -8,7 +8,11 @@ import (
 	"bandr.me/p/pocryp/internal/app"
 	"bandr.me/p/pocryp/internal/hash"
 	"bandr.me/p/pocryp/internal/kdf"
+	"bandr.me/p/pocryp/internal/keygen"
 	"bandr.me/p/pocryp/internal/rsa"
+
+	kemrsa "bandr.me/p/pocryp/internal/kem/rsa"
+	kwaes "bandr.me/p/pocryp/internal/keywrap/aes"
 )
 
 func main() {
@@ -19,12 +23,12 @@ func main() {
 		app.Command{
 			Name:  "gen-aes",
 			Usage: "Generate AES key",
-			Run:   aes.KeyGen,
+			Run:   keygen.Aes,
 		},
 		app.Command{
 			Name:  "gen-rsa",
 			Usage: "Generate RSA key",
-			Run:   rsa.KeyGenCmd,
+			Run:   keygen.Rsa,
 		},
 	)
 
@@ -100,7 +104,7 @@ func main() {
 		app.Command{
 			Name:  "aes-keywrap",
 			Usage: "Wrap/Unwrap using AES-KEYWRAP",
-			Run:   aes.KeyWrapCmd,
+			Run:   kwaes.Cmd,
 		},
 	)
 
@@ -125,9 +129,9 @@ func main() {
 	a.Add(
 		"Key Encapsulation Mechanism(KEM)",
 		app.Command{
-			Name:  "rsa-kem",
+			Name:  "kem-rsa",
 			Usage: "Encapsulate/Decapsulate using RSA-KEM",
-			Run:   rsa.KemCmd,
+			Run:   kemrsa.Cmd,
 		},
 	)
 

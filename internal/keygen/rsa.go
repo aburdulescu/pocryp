@@ -1,8 +1,10 @@
-package aes
+package keygen
 
 import (
 	"crypto/rand"
-	"encoding/hex"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
 	"errors"
 	"flag"
 	"fmt"
@@ -11,13 +13,13 @@ import (
 	"strconv"
 )
 
-func KeyGen(args ...string) error {
-	fset := flag.NewFlagSet("aes-keygen", flag.ContinueOnError)
+func Rsa(args ...string) error {
+	fset := flag.NewFlagSet("rsa-keygen", flag.ContinueOnError)
 	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp gen-aes [-out OUTPUT] [-bin] NUM_BITS
+		fmt.Fprint(os.Stderr, `Usage: pocryp gen-rsa [-out OUTPUT] NUM_BITS
 
-Generate AES key.
-Valid NUM_BITS: 128, 192, 256.
+Generate RSA key.
+Valid NUM_BITS: 2048, 3072, 4096.
 
 If -out is not specified, the output will be printed to stdout.
 
@@ -27,7 +29,6 @@ Options:
 	}
 
 	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
-	fBin := fset.Bool("bin", false, "Write output as binary not hex.")
 
 	if err := fset.Parse(args); err != nil {
 		return err
@@ -43,11 +44,10 @@ Options:
 		return err
 	}
 
-	if !(numBits == 128 || numBits == 192 || numBits == 256) {
+	if !(numBits == 2048 || numBits == 3072 || numBits == 4096) {
 		fset.Usage()
 		return errors.New("invalid num bits requested")
 	}
-	numBits /= 8
 
 	var w io.Writer
 	if *fOutput == "" {
@@ -61,17 +61,17 @@ Options:
 		w = f
 	}
 
-	output := make([]byte, numBits)
-	if _, err := rand.Read(output); err != nil {
+	key, err := rsa.GenerateKey(rand.Reader, numBits)
+	if err != nil {
 		return err
 	}
 
-	if *fBin {
-		if _, err := w.Write(output); err != nil {
-			return err
-		}
-	} else {
-		fmt.Fprintln(w, hex.EncodeToString(output))
+	block := &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(key),
+	}
+	if err := pem.Encode(w, block); err != nil {
+		return err
 	}
 
 	return nil
