@@ -52,11 +52,11 @@ Options:
 		fset.Usage()
 		return errors.New("no key specified, use -key to specify it")
 	}
-
 	keyData, err := os.ReadFile(*fKey)
 	if err != nil {
 		return err
 	}
+
 	var key any
 	switch {
 	case *fDecapsulate:

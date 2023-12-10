@@ -1,13 +1,12 @@
 package cmd
 
 import (
-	"encoding/hex"
-	"errors"
 	"flag"
 	"fmt"
 	"os"
 
 	"bandr.me/p/pocryp/internal/keywrap/aes"
+	"bandr.me/p/pocryp/internal/util"
 	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
@@ -37,29 +36,9 @@ Options:
 		return err
 	}
 
-	if *fKey == "" && *fKeyFile == "" {
-		fset.Usage()
-		return errors.New("no key specified, use -k or --key-file to specify it")
-	}
-	if *fKey != "" && *fKeyFile != "" {
-		fset.Usage()
-		return errors.New("cannot use -k and --key-file at the same time")
-	}
-
-	var key []byte
-	if *fKey != "" {
-		b, err := hex.DecodeString(*fKey)
-		if err != nil {
-			return err
-		}
-		key = b
-	}
-	if *fKeyFile != "" {
-		b, err := os.ReadFile(*fKeyFile)
-		if err != nil {
-			return err
-		}
-		key = b
+	key, err := util.FileOrHex(*fKeyFile, *fKey)
+	if err != nil {
+		return fmt.Errorf("key: %w", err)
 	}
 
 	sf, err := stdfile.New(*fInput, *fOutput)
