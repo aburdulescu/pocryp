@@ -43,6 +43,7 @@ func printAppVersion() {
 
 func (a *App) Run(args ...string) error {
 	fset := flag.NewFlagSet("pocryp", flag.ExitOnError)
+	fset.SetOutput(os.Stdout)
 	fset.Usage = a.Usage
 	fset.BoolVar(&a.printVersion, "version", false, "")
 	if err := fset.Parse(args); err != nil {
@@ -122,8 +123,7 @@ func (a App) maxCommandName(category string) int {
 }
 
 func (a App) Usage() {
-	w := os.Stderr
-	fmt.Fprint(w, `Usage: pocryp command [ARGS]
+	fmt.Print(`Usage: pocryp command [ARGS]
 
 Flags:
   -h, --help  Print this message
@@ -133,13 +133,13 @@ Commands(by category):
 
 `)
 	for _, v := range a.categories {
-		fmt.Fprintf(w, "%s:\n", v.name)
+		fmt.Printf("%s:\n", v.name)
 		mlen := a.maxCommandName(v.name)
 		for _, cmd := range v.commands {
 			padding := strings.Repeat(" ", mlen-len(cmd.Name))
-			fmt.Fprintf(w, "  %s%s  %s\n", cmd.Name, padding, cmd.Brief)
+			fmt.Printf("  %s%s  %s\n", cmd.Name, padding, cmd.Brief)
 		}
-		fmt.Fprint(w, "\n")
+		fmt.Print("\n")
 	}
-	fmt.Fprint(w, "Run 'pocryp command -h' for more information about a command.\n")
+	fmt.Print("Run 'pocryp command -h' for more information about a command.\n")
 }

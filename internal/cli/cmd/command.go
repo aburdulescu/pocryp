@@ -34,10 +34,11 @@ func (c *Command) Init() {
 		panic("cmd: missing Brief")
 	}
 	c.Flags = flag.NewFlagSet(c.Name, flag.ContinueOnError)
+	c.Flags.SetOutput(os.Stdout)
 	c.Flags.Usage = func() {
-		fmt.Fprint(os.Stderr, c.Usage)
-		fmt.Fprintln(os.Stderr, "Options:")
+		fmt.Print(c.Usage)
+		fmt.Println("Options:")
 		c.Flags.PrintDefaults()
-		fmt.Fprint(os.Stderr, "\n")
+		fmt.Print("\n")
 	}
 }
