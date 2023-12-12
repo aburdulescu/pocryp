@@ -40,7 +40,7 @@ func TestCmacCmd(t *testing.T) {
 
 			args := []string{"-bin", "-key", key, "-in", in, "-out", out}
 
-			if err := CmacGenerateCmd(args...); err != nil {
+			if err := testutil.RunCmd(CmacGenerateCmd, args...); err != nil {
 				t.Fatal(err)
 			}
 
@@ -57,7 +57,7 @@ func TestCmacCmd(t *testing.T) {
 
 			args := []string{"-key", key, "-in", in, "-mac", test.mac}
 
-			if err := CmacVerifyCmd(args...); err != nil {
+			if err := testutil.RunCmd(CmacVerifyCmd, args...); err != nil {
 				t.Log("msg =", test.msg)
 				t.Log("mac =", test.mac)
 				t.Fatal(err)

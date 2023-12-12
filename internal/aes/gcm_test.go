@@ -33,17 +33,17 @@ func TestGcmCmd(t *testing.T) {
 		})
 	}
 	t.Run("NoKey", func(t *testing.T) {
-		if err := GcmCmd(); err == nil {
+		if err := testutil.RunCmd(GcmCmd); err == nil {
 			t.Fatal("expected and error")
 		}
 	})
 	t.Run("KeyAsHexAndFromFile", func(t *testing.T) {
-		if err := GcmCmd("-key=0011", "-key-file=foo"); err == nil {
+		if err := testutil.RunCmd(GcmCmd, "-key=0011", "-key-file=foo"); err == nil {
 			t.Fatal("expected and error")
 		}
 	})
 	t.Run("NoIv", func(t *testing.T) {
-		if err := GcmCmd("-key=0011"); err == nil {
+		if err := testutil.RunCmd(GcmCmd, "-key=0011"); err == nil {
 			t.Fatal("expected and error")
 		}
 	})
@@ -71,7 +71,7 @@ func testGcm(t *testing.T, tmp string, direction string, key, nonce, aad, input,
 		}
 		args = append(args, "-aad", dstpath)
 	}
-	if err := GcmCmd(args...); err != nil {
+	if err := testutil.RunCmd(GcmCmd, args...); err != nil {
 		t.Fatal(err)
 	}
 	testutil.ExpectFileContent(t, out, expected)
