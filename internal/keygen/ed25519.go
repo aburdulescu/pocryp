@@ -34,7 +34,7 @@ func runEd25519(cmd *cmd.Command) error {
 	}
 	defer sf.Close()
 
-	key, _, err := ed25519.GenerateKey(nil)
+	_, key, err := ed25519.GenerateKey(nil)
 	if err != nil {
 		return err
 	}
