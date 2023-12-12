@@ -137,7 +137,7 @@ Commands(by category):
 		mlen := a.maxCommandName(v.name)
 		for _, cmd := range v.commands {
 			padding := strings.Repeat(" ", mlen-len(cmd.Name))
-			fmt.Fprintf(w, "  %s%s  %s\n", cmd.Name, padding, cmd.Usage)
+			fmt.Fprintf(w, "  %s%s  %s\n", cmd.Name, padding, cmd.Brief)
 		}
 		fmt.Fprint(w, "\n")
 	}
