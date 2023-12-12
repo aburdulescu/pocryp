@@ -3,33 +3,31 @@ package rsa
 import (
 	"encoding/pem"
 	"errors"
-	"flag"
-	"fmt"
-	"os"
 
+	"bandr.me/p/pocryp/internal/cli/cmd"
 	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
-func Pem2DerCmd(args ...string) error {
-	fset := flag.NewFlagSet("rsa-pem2der", flag.ContinueOnError)
-	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-pem2der [-bin] [-in INPUT] [-out OUTPUT]
+var Pem2DerCmd = &cmd.Command{
+	Name:  "rsa-pem2der",
+	Run:   runPem2Der,
+	Brief: "Convert RSA key from PEM to PKCS#1 ASN.1 DER",
+
+	Usage: `Usage: pocryp rsa-pem2der [-bin] [-in INPUT] [-out OUTPUT]
 
 Convert RSA key from PEM to PKCS#1 ASN.1 DER.
 
 If -in is not specified, stdin will be read.
 If -out is not specified, the output will be printed to stdout.
+`,
+}
 
-Options:
-`)
-		fset.PrintDefaults()
-	}
+func runPem2Der(cmd *cmd.Command) error {
+	fOutput := cmd.Flags.String("out", "", "Write the result to the file at path OUTPUT.")
+	fInput := cmd.Flags.String("in", "", "Read data from the file at path INPUT.")
+	fBin := cmd.Flags.Bool("bin", false, "Write output as binary not hex.")
 
-	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
-	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
-	fBin := fset.Bool("bin", false, "Write output as binary not hex.")
-
-	if err := fset.Parse(args); err != nil {
+	if err := cmd.Parse(); err != nil {
 		return err
 	}
 

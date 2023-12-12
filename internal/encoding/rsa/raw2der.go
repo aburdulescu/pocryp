@@ -5,43 +5,43 @@ import (
 	"crypto/x509"
 	"encoding/hex"
 	"errors"
-	"flag"
 	"fmt"
 	"math/big"
-	"os"
+
+	"bandr.me/p/pocryp/internal/cli/cmd"
 )
 
-func Raw2DerCmd(args ...string) error {
-	fset := flag.NewFlagSet("rsa-raw2der", flag.ContinueOnError)
-	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-raw2der [-priv|-pub] -n modulus [-e publicExponent] -d privateExponent [-p prime1 -q prime2]
+var Raw2DerCmd = &cmd.Command{
+	Name:  "rsa-raw2der",
+	Run:   runRaw2Der,
+	Brief: "Convert RSA key from raw values(n, e, d, p, q) to PKCS#1 ASN.1 DER",
+
+	Usage: `Usage: pocryp rsa-raw2der [-priv|-pub] -n modulus [-e publicExponent] -d privateExponent [-p prime1 -q prime2]
 
 Convert RSA key from raw values(n, e, d, p, q) to PKCS#1 ASN.1 DER.
+`,
+}
 
-Options:
-`)
-		fset.PrintDefaults()
-	}
+func runRaw2Der(cmd *cmd.Command) error {
+	fPriv := cmd.Flags.Bool("priv", false, "Encode PrivateKey from given inputs.")
+	fPub := cmd.Flags.Bool("pub", false, "Encode PublicKey from given inputs.")
+	fMod := cmd.Flags.String("n", "", "Modulus as hex string")
+	fPubExp := cmd.Flags.Int("e", 0, "Public exponent as integer")
+	fPrivExp := cmd.Flags.String("d", "", "Private exponent as hex string")
+	fPrime1 := cmd.Flags.String("p", "", "First prime number as hex string")
+	fPrime2 := cmd.Flags.String("q", "", "Second prime number as hex string")
 
-	fPriv := fset.Bool("priv", false, "Encode PrivateKey from given inputs.")
-	fPub := fset.Bool("pub", false, "Encode PublicKey from given inputs.")
-	fMod := fset.String("n", "", "Modulus as hex string")
-	fPubExp := fset.Int("e", 0, "Public exponent as integer")
-	fPrivExp := fset.String("d", "", "Private exponent as hex string")
-	fPrime1 := fset.String("p", "", "First prime number as hex string")
-	fPrime2 := fset.String("q", "", "Second prime number as hex string")
-
-	if err := fset.Parse(args); err != nil {
+	if err := cmd.Parse(); err != nil {
 		return err
 	}
 
 	if *fMod == "" {
-		fset.Usage()
+		cmd.Flags.Usage()
 		return errors.New("modulus not specified, use -n to specify it")
 	}
 
 	if *fPub && *fPriv {
-		fset.Usage()
+		cmd.Flags.Usage()
 		return errors.New("cannot specify -priv and -pub at the same time, choose one")
 	}
 
@@ -56,19 +56,19 @@ Options:
 	switch {
 	case *fPriv:
 		if *fPubExp == 0 {
-			fset.Usage()
+			cmd.Flags.Usage()
 			return errors.New("-e is needed")
 		}
 		if *fPrivExp == "" {
-			fset.Usage()
+			cmd.Flags.Usage()
 			return errors.New("-d is needed")
 		}
 		if *fPrime1 == "" {
-			fset.Usage()
+			cmd.Flags.Usage()
 			return errors.New("-p is needed")
 		}
 		if *fPrime2 == "" {
-			fset.Usage()
+			cmd.Flags.Usage()
 			return errors.New("-q is needed")
 		}
 		dBytes, err := hex.DecodeString(*fPrivExp)
@@ -100,7 +100,7 @@ Options:
 		result = x509.MarshalPKCS1PrivateKey(key)
 	case *fPub:
 		if *fPubExp == 0 {
-			fset.Usage()
+			cmd.Flags.Usage()
 			return errors.New("-e is needed")
 		}
 		key := &rsa.PublicKey{
@@ -109,7 +109,7 @@ Options:
 		}
 		result = x509.MarshalPKCS1PublicKey(key)
 	default:
-		fset.Usage()
+		cmd.Flags.Usage()
 		return errors.New("need to specify one of -priv or -pub")
 	}
 

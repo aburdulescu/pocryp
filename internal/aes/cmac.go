@@ -3,38 +3,37 @@ package aes
 import (
 	"crypto/aes"
 	"encoding/hex"
-	"flag"
 	"fmt"
-	"os"
 
+	"bandr.me/p/pocryp/internal/cli/cmd"
 	"bandr.me/p/pocryp/internal/util"
 	"bandr.me/p/pocryp/internal/util/stdfile"
 
 	"github.com/aead/cmac"
 )
 
-func CmacGenerateCmd(args ...string) error {
-	fset := flag.NewFlagSet("aes-cmac-generate", flag.ContinueOnError)
-	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp aes-cmac-generate [-bin] -key|-key-file [-in INPUT] [-out OUTPUT]
+var CmacGenerateCmd = &cmd.Command{
+	Name:  "aes-cmac-generate",
+	Run:   runCmacGenerate,
+	Brief: "Generate MAC using AES-CMAC",
+
+	Usage: `Usage: pocryp aes-cmac-generate [-bin] -key|-key-file [-in INPUT] [-out OUTPUT]
 
 Generate MAC using AES-CMAC.
 
 If -in is not specified, stdin will be read.
 If -out is not specified, the output will be printed to stdout.
+`,
+}
 
-Options:
-`)
-		fset.PrintDefaults()
-	}
+func runCmacGenerate(cmd *cmd.Command) error {
+	fOutput := cmd.Flags.String("out", "", "Write the result to the file at path OUTPUT.")
+	fInput := cmd.Flags.String("in", "", "Read data from the file at path INPUT.")
+	fKey := cmd.Flags.String("key", "", "Key as hex.")
+	fKeyFile := cmd.Flags.String("key-file", "", "File which contains the key as binary/text.")
+	fBin := cmd.Flags.Bool("bin", false, "Print output in binary form not hex.")
 
-	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
-	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
-	fKey := fset.String("key", "", "Key as hex.")
-	fKeyFile := fset.String("key-file", "", "File which contains the key as binary/text.")
-	fBin := fset.Bool("bin", false, "Print output in binary form not hex.")
-
-	if err := fset.Parse(args); err != nil {
+	if err := cmd.Parse(); err != nil {
 		return err
 	}
 
@@ -67,26 +66,26 @@ Options:
 	return sf.Write(output, *fBin)
 }
 
-func CmacVerifyCmd(args ...string) error {
-	fset := flag.NewFlagSet("aes-cmac-verify", flag.ContinueOnError)
-	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp aes-cmac-verify -key|-key-file -in MESSAGE -mac MAC
+var CmacVerifyCmd = &cmd.Command{
+	Name:  "aes-cmac-verify",
+	Run:   runCmacVerify,
+	Brief: "Verify MAC using AES-CMAC",
+
+	Usage: `Usage: pocryp aes-cmac-verify -key|-key-file -in MESSAGE -mac MAC
 
 Verify MAC using AES-CMAC.
 
 If -in is not specified, stdin will be read.
+`,
+}
 
-Options:
-`)
-		fset.PrintDefaults()
-	}
+func runCmacVerify(cmd *cmd.Command) error {
+	fInput := cmd.Flags.String("in", "", "Read message from the file at path INPUT.")
+	fMac := cmd.Flags.String("mac", "", "Expected MAC as hex string.")
+	fKey := cmd.Flags.String("key", "", "Key as hex.")
+	fKeyFile := cmd.Flags.String("key-file", "", "File which contains the key as binary/text.")
 
-	fInput := fset.String("in", "", "Read message from the file at path INPUT.")
-	fMac := fset.String("mac", "", "Expected MAC as hex string.")
-	fKey := fset.String("key", "", "Key as hex.")
-	fKeyFile := fset.String("key-file", "", "File which contains the key as binary/text.")
-
-	if err := fset.Parse(args); err != nil {
+	if err := cmd.Parse(); err != nil {
 		return err
 	}
 

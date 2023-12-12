@@ -5,39 +5,38 @@ import (
 	"crypto/cipher"
 	"encoding/hex"
 	"errors"
-	"flag"
 	"fmt"
-	"os"
 
+	"bandr.me/p/pocryp/internal/cli/cmd"
 	"bandr.me/p/pocryp/internal/util"
 	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
-func CbcCmd(args ...string) error {
-	fset := flag.NewFlagSet("aes-cbc", flag.ContinueOnError)
-	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp aes-cbc [-bin] [-e/-d] -key/-key-file -iv [-in INPUT] [-out OUTPUT]
+var CbcCmd = &cmd.Command{
+	Name:  "aes-cbc",
+	Run:   runCbc,
+	Brief: "Encrypt/Decrypt using AES-CBC",
+
+	Usage: `Usage: pocryp aes-cbc [-bin] [-e/-d] -key/-key-file -iv [-in INPUT] [-out OUTPUT]
 
 Encrypt/Decrypt INPUT to OUTPUT using AES-CBC.
 
 If -in is not specified, stdin will be read.
 If -out is not specified, the output will be printed to stdout.
+`,
+}
 
-Options:
-`)
-		fset.PrintDefaults()
-	}
+func runCbc(cmd *cmd.Command) error {
+	fEncrypt := cmd.Flags.Bool("e", false, "Encrypt the input to the output. Default if omitted.")
+	fDecrypt := cmd.Flags.Bool("d", false, "Decrypt the input to the output.")
+	fOutput := cmd.Flags.String("out", "", "Write the result to the file at path OUTPUT.")
+	fInput := cmd.Flags.String("in", "", "Read data from the file at path INPUT.")
+	fKey := cmd.Flags.String("key", "", "Key as hex.")
+	fKeyFile := cmd.Flags.String("key-file", "", "File which contains the key as binary/text.")
+	fIV := cmd.Flags.String("iv", "", "IV as hex.")
+	fBin := cmd.Flags.Bool("bin", false, "Print output in binary form not hex.")
 
-	fEncrypt := fset.Bool("e", false, "Encrypt the input to the output. Default if omitted.")
-	fDecrypt := fset.Bool("d", false, "Decrypt the input to the output.")
-	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
-	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
-	fKey := fset.String("key", "", "Key as hex.")
-	fKeyFile := fset.String("key-file", "", "File which contains the key as binary/text.")
-	fIV := fset.String("iv", "", "IV as hex.")
-	fBin := fset.Bool("bin", false, "Print output in binary form not hex.")
-
-	if err := fset.Parse(args); err != nil {
+	if err := cmd.Parse(); err != nil {
 		return err
 	}
 
@@ -47,7 +46,7 @@ Options:
 	}
 
 	if *fIV == "" {
-		fset.Usage()
+		cmd.Flags.Usage()
 		return errors.New("no IV specified, use -iv to specify it")
 	}
 

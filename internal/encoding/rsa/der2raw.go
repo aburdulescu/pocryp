@@ -4,38 +4,38 @@ import (
 	"crypto/x509"
 	"encoding/hex"
 	"errors"
-	"flag"
 	"fmt"
-	"os"
+
+	"bandr.me/p/pocryp/internal/cli/cmd"
 )
 
-func Der2RawCmd(args ...string) error {
-	fset := flag.NewFlagSet("rsa-der2raw", flag.ContinueOnError)
-	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp rsa-der2raw -priv/-pub DER
+var Der2RawCmd = &cmd.Command{
+	Name:  "rsa-der2raw",
+	Run:   runDer2Raw,
+	Brief: "Convert RSA key from PKCS#1 ASN.1 DER to raw values(n, e, d, p, q)",
+
+	Usage: `pocryp rsa-der2raw -priv/-pub DER
 
 Convert RSA key from PKCS#1 ASN.1 DER to raw values(n, e, d, p, q).
 
 DER must be specified in hex form.
+`,
+}
 
-Options:
-`)
-		fset.PrintDefaults()
-	}
+func runDer2Raw(cmd *cmd.Command) error {
+	fPriv := cmd.Flags.Bool("priv", false, "Encode PrivateKey from given input.")
+	fPub := cmd.Flags.Bool("pub", false, "Encode PublicKey from given input.")
 
-	fPriv := fset.Bool("priv", false, "Encode PrivateKey from given input.")
-	fPub := fset.Bool("pub", false, "Encode PublicKey from given input.")
-
-	if err := fset.Parse(args); err != nil {
+	if err := cmd.Parse(); err != nil {
 		return err
 	}
 
-	if fset.NArg() != 1 {
-		fset.Usage()
+	if cmd.Flags.NArg() != 1 {
+		cmd.Flags.Usage()
 		return errors.New("DER hex string not specified")
 	}
 
-	input, err := hex.DecodeString(fset.Arg(0))
+	input, err := hex.DecodeString(cmd.Flags.Arg(0))
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ Options:
 		fmt.Printf("n=%s\n", hex.EncodeToString(key.N.Bytes()))
 		fmt.Printf("e=%x\n", key.E)
 	default:
-		fset.Usage()
+		cmd.Flags.Usage()
 		return errors.New("need to specify one of -priv or -pub")
 	}
 
