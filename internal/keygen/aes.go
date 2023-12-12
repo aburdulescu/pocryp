@@ -3,48 +3,46 @@ package keygen
 import (
 	"crypto/rand"
 	"errors"
-	"flag"
-	"fmt"
-	"os"
 	"strconv"
 
+	"bandr.me/p/pocryp/internal/cli/cmd"
 	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
-func Aes(args ...string) error {
-	fset := flag.NewFlagSet("gen-aes", flag.ContinueOnError)
-	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp gen-aes [-out OUTPUT] [-bin] NUM_BITS
+var AesCmd = &cmd.Command{
+	Name:  "gen-aes",
+	Run:   runAes,
+	Brief: "Generate AES key",
+
+	Usage: `Usage: pocryp gen-aes [-out OUTPUT] [-bin] NUM_BITS
 
 Generate AES key.
 Valid NUM_BITS: 128, 192, 256.
 
 If -out is not specified, the output will be printed to stdout.
+`,
+}
 
-Options:
-`)
-		fset.PrintDefaults()
-	}
+func runAes(cmd *cmd.Command) error {
+	fOutput := cmd.Flags.String("out", "", "Write the result to the file at path OUTPUT.")
+	fBin := cmd.Flags.Bool("bin", false, "Write output as binary not hex.")
 
-	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
-	fBin := fset.Bool("bin", false, "Write output as binary not hex.")
-
-	if err := fset.Parse(args); err != nil {
+	if err := cmd.Parse(); err != nil {
 		return err
 	}
 
-	if fset.NArg() == 0 {
-		fset.Usage()
+	if cmd.Flags.NArg() == 0 {
+		cmd.Flags.Usage()
 		return errors.New("number of bits not specified")
 	}
 
-	numBits, err := strconv.Atoi(fset.Arg(0))
+	numBits, err := strconv.Atoi(cmd.Flags.Arg(0))
 	if err != nil {
 		return err
 	}
 
 	if !(numBits == 128 || numBits == 192 || numBits == 256) {
-		fset.Usage()
+		cmd.Flags.Usage()
 		return errors.New("invalid num bits requested")
 	}
 	numBits /= 8

@@ -5,7 +5,15 @@ import (
 	"encoding/hex"
 	"os"
 	"testing"
+
+	"bandr.me/p/pocryp/internal/cli/cmd"
 )
+
+func RunCmd(cmd *cmd.Command, args ...string) error {
+	cmd.Init()
+	cmd.Args = args
+	return cmd.Run(cmd)
+}
 
 func SetupIn(t *testing.T, in string, input []byte) {
 	t.Helper()

@@ -1,10 +1,9 @@
 package kdf
 
 import (
-	"flag"
 	"fmt"
-	"os"
 
+	"bandr.me/p/pocryp/internal/cli/cmd"
 	"bandr.me/p/pocryp/internal/common"
 	"bandr.me/p/pocryp/internal/util"
 	"bandr.me/p/pocryp/internal/util/stdfile"
@@ -12,53 +11,53 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
-func Pbkdf2Cmd(args ...string) error {
-	fset := flag.NewFlagSet("kdf-pbkdf2", flag.ContinueOnError)
-	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp kdf-pbkdf2 [-bin] -key|-key-file -salt|-salt-file -iter -len -hash [-out OUTPUT]
+var Pbkdf2Cmd = &cmd.Command{
+	Name:  "pbkdf2",
+	Run:   runPbkdf2,
+	Brief: "Derive key using PBKDF2",
+
+	Usage: `Usage: pocryp kdf-pbkdf2 [-bin] -key|-key-file -salt|-salt-file -iter -len -hash [-out OUTPUT]
 
 Derive a new key from the given key using PBKDF2.
 
 If -out is not specified, the output will be printed to stdout.
+`,
+}
 
-Options:
-`)
-		fset.PrintDefaults()
-	}
-
-	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
-	fKey := fset.String("key", "", "Key as hex.")
-	fKeyFile := fset.String("key-file", "", "File which contains the key as binary/text.")
-	fSalt := fset.String("salt", "", "Salt as hex.")
-	fSaltFile := fset.String("salt-file", "", "File which contains the salt as binary/text.")
-	fIter := fset.Int("iter", 1024, "Number of iterations.")
-	fLen := fset.Int("len", 128, "Bit-length of the derived key.")
-	fHashFunc := fset.String(
+func runPbkdf2(cmd *cmd.Command) error {
+	fOutput := cmd.Flags.String("out", "", "Write the result to the file at path OUTPUT.")
+	fKey := cmd.Flags.String("key", "", "Key as hex.")
+	fKeyFile := cmd.Flags.String("key-file", "", "File which contains the key as binary/text.")
+	fSalt := cmd.Flags.String("salt", "", "Salt as hex.")
+	fSaltFile := cmd.Flags.String("salt-file", "", "File which contains the salt as binary/text.")
+	fIter := cmd.Flags.Int("iter", 1024, "Number of iterations.")
+	fLen := cmd.Flags.Int("len", 128, "Bit-length of the derived key.")
+	fHashFunc := cmd.Flags.String(
 		"hash",
 		common.AlgSHA256,
 		fmt.Sprintf("Hash function(valid options: %s).", common.SHAAlgs),
 	)
-	fBin := fset.Bool("bin", false, "Print output in binary form not hex.")
+	fBin := cmd.Flags.Bool("bin", false, "Print output in binary form not hex.")
 
-	if err := fset.Parse(args); err != nil {
+	if err := cmd.Parse(); err != nil {
 		return err
 	}
 
 	key, err := util.FileOrHex(*fKeyFile, *fKey)
 	if err != nil {
-		fset.Usage()
+		cmd.Flags.Usage()
 		return fmt.Errorf("key: %w", err)
 	}
 
 	salt, err := util.FileOrHex(*fSaltFile, *fSalt)
 	if err != nil {
-		fset.Usage()
+		cmd.Flags.Usage()
 		return fmt.Errorf("salt: %w", err)
 	}
 
 	hashFunc, err := common.HashFuncFrom(*fHashFunc)
 	if err != nil {
-		fset.Usage()
+		cmd.Flags.Usage()
 		return err
 	}
 

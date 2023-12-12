@@ -5,21 +5,23 @@ import (
 	"path/filepath"
 	"strconv"
 	"testing"
+
+	"bandr.me/p/pocryp/internal/testutil"
 )
 
 func TestAes(t *testing.T) {
 	t.Run("NoArgs", func(t *testing.T) {
-		if err := Aes(); err == nil {
+		if err := testutil.RunCmd(AesCmd); err == nil {
 			t.Fatal("expected error")
 		}
 	})
 	t.Run("InvalidNumBits", func(t *testing.T) {
-		if err := Aes("4223"); err == nil {
+		if err := testutil.RunCmd(AesCmd, "4223"); err == nil {
 			t.Fatal("expected error")
 		}
 	})
 	t.Run("NumBitsNotInt", func(t *testing.T) {
-		if err := Aes("hello"); err == nil {
+		if err := testutil.RunCmd(AesCmd, "hello"); err == nil {
 			t.Fatal("expected error")
 		}
 	})
@@ -31,7 +33,7 @@ func TestAes(t *testing.T) {
 	for _, numBits := range tests {
 		t.Run(numBits, func(t *testing.T) {
 			outPath := filepath.Join(tmp, "out"+numBits)
-			if err := Aes("-bin", "-out", outPath, numBits); err != nil {
+			if err := testutil.RunCmd(AesCmd, "-bin", "-out", outPath, numBits); err != nil {
 				t.Fatalf("%s: %v", numBits, err)
 			}
 			numBitsInt, _ := strconv.Atoi(numBits)

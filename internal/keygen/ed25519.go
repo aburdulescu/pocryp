@@ -2,31 +2,29 @@ package keygen
 
 import (
 	"crypto/ed25519"
-	"flag"
-	"fmt"
-	"os"
 
+	"bandr.me/p/pocryp/internal/cli/cmd"
 	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
-func Ed25519(args ...string) error {
-	fset := flag.NewFlagSet("gen-ed25519", flag.ContinueOnError)
-	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp gen-ed25519 [-out OUTPUT] [-bin]
+var Ed25519Cmd = &cmd.Command{
+	Name:  "gen-ed25519",
+	Run:   runEd25519,
+	Brief: "Generate ED25519 key",
+
+	Usage: `Usage: pocryp gen-ed25519 [-out OUTPUT] [-bin]
 
 Generate ED25519 key.
 
 If -out is not specified, the output will be printed to stdout.
+`,
+}
 
-Options:
-`)
-		fset.PrintDefaults()
-	}
+func runEd25519(cmd *cmd.Command) error {
+	fOutput := cmd.Flags.String("out", "", "Write the result to the file at path OUTPUT.")
+	fBin := cmd.Flags.Bool("bin", false, "Write output as binary not hex.")
 
-	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
-	fBin := fset.Bool("bin", false, "Write output as binary not hex.")
-
-	if err := fset.Parse(args); err != nil {
+	if err := cmd.Parse(); err != nil {
 		return err
 	}
 

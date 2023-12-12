@@ -6,47 +6,45 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"flag"
-	"fmt"
-	"os"
 	"strconv"
 
+	"bandr.me/p/pocryp/internal/cli/cmd"
 	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
-func Rsa(args ...string) error {
-	fset := flag.NewFlagSet("rsa-keygen", flag.ContinueOnError)
-	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp gen-rsa [-out OUTPUT] NUM_BITS
+var RsaCmd = &cmd.Command{
+	Name:  "gen-rsa",
+	Run:   runRsa,
+	Brief: "Generate RSA key",
+
+	Usage: `Usage: pocryp gen-rsa [-out OUTPUT] NUM_BITS
 
 Generate RSA key.
 Valid NUM_BITS: 2048, 3072, 4096.
 
 If -out is not specified, the output will be printed to stdout.
+`,
+}
 
-Options:
-`)
-		fset.PrintDefaults()
-	}
+func runRsa(cmd *cmd.Command) error {
+	fOutput := cmd.Flags.String("out", "", "Write the result to the file at path OUTPUT.")
 
-	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
-
-	if err := fset.Parse(args); err != nil {
+	if err := cmd.Parse(); err != nil {
 		return err
 	}
 
-	if fset.NArg() == 0 {
-		fset.Usage()
+	if cmd.Flags.NArg() == 0 {
+		cmd.Flags.Usage()
 		return errors.New("number of bits not specified")
 	}
 
-	numBits, err := strconv.Atoi(fset.Arg(0))
+	numBits, err := strconv.Atoi(cmd.Flags.Arg(0))
 	if err != nil {
 		return err
 	}
 
 	if !(numBits == 2048 || numBits == 3072 || numBits == 4096) {
-		fset.Usage()
+		cmd.Flags.Usage()
 		return errors.New("invalid num bits requested")
 	}
 

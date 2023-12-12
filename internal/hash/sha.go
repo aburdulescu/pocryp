@@ -2,41 +2,40 @@ package hash
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"io"
-	"os"
 
+	"bandr.me/p/pocryp/internal/cli/cmd"
 	"bandr.me/p/pocryp/internal/common"
 	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
-func ShaCmd(args ...string) error {
-	fset := flag.NewFlagSet("hash-sha", flag.ContinueOnError)
-	fset.Usage = func() {
-		fmt.Fprint(os.Stderr, `Usage: pocryp hash-sha -alg [-bin] [-in INPUT] [-out OUTPUT]
+var ShaCmd = &cmd.Command{
+	Name:  "sha",
+	Run:   runSha,
+	Brief: "Generate cryptographic hash using SHA",
+
+	Usage: `Usage: pocryp hash-sha -alg [-bin] [-in INPUT] [-out OUTPUT]
 
 Compute SHA digest of INPUT to OUTPUT.
 
 If -in is not specified, stdin will be read.
 If -out is not specified, the output will be printed to stdout.
+`,
+}
 
-Options:
-`)
-		fset.PrintDefaults()
-	}
+func runSha(cmd *cmd.Command) error {
+	fOutput := cmd.Flags.String("out", "", "Write the result to the file at path OUTPUT.")
+	fInput := cmd.Flags.String("in", "", "Read data from the file at path INPUT.")
+	fAlg := cmd.Flags.String("alg", "", fmt.Sprintf("SHA algorithm to use; one of: %s.", common.SHAAlgs))
+	fBin := cmd.Flags.Bool("bin", false, "Write output as binary not hex.")
 
-	fOutput := fset.String("out", "", "Write the result to the file at path OUTPUT.")
-	fInput := fset.String("in", "", "Read data from the file at path INPUT.")
-	fAlg := fset.String("alg", "", fmt.Sprintf("SHA algorithm to use; one of: %s.", common.SHAAlgs))
-	fBin := fset.Bool("bin", false, "Write output as binary not hex.")
-
-	if err := fset.Parse(args); err != nil {
+	if err := cmd.Parse(); err != nil {
 		return err
 	}
 
 	if *fAlg == "" {
-		fset.Usage()
+		cmd.Flags.Usage()
 		return errors.New("hash alg not specified, use -alg")
 	}
 
@@ -48,7 +47,7 @@ Options:
 
 	hashFunc, err := common.HashFuncFrom(*fAlg)
 	if err != nil {
-		fset.Usage()
+		cmd.Flags.Usage()
 		return err
 	}
 
