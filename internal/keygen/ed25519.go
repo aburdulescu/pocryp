@@ -8,7 +8,7 @@ import (
 )
 
 var Ed25519Cmd = &cmd.Command{
-	Name:  "gen-ed25519",
+	Name:  "ed25519-keygen",
 	Run:   runEd25519,
 	Brief: "Generate ED25519 key",
 
