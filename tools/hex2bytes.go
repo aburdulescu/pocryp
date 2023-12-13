@@ -1,22 +1,20 @@
 package main
 
 import (
-	"log"
+	"encoding/hex"
+	"fmt"
 	"os"
 )
 
 func main() {
-	args := os.Args[1:]
-
-	for i, arg := range args {
-		if len(arg)%2 != 0 {
-			log.Fatalf("input #%d len not even", i)
+	for _, arg := range os.Args[1:] {
+		b, err := hex.DecodeString(arg)
+		if err != nil {
+			panic(err)
 		}
-
-		print("[]byte{")
-		for i := 0; i < len(arg); i += 2 {
-			print("0x", arg[i:i+2], ",")
+		for _, v := range b {
+			fmt.Printf("0x%02x,", v)
 		}
-		print("}\n")
+		print("\n")
 	}
 }

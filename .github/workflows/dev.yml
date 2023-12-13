@@ -3,6 +3,10 @@ name: Dev
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '*.md'
+      - '*.org'
+      - 'tools/**'
 
 permissions:
   contents: read
