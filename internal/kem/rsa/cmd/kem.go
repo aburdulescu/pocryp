@@ -16,7 +16,7 @@ import (
 )
 
 var Cmd = &cmd.Command{
-	Name:  "kem-rsa",
+	Name:  "rsa-kem",
 	Run:   run,
 	Brief: "Encapsulate/Decapsulate using RSA-KEM",
 

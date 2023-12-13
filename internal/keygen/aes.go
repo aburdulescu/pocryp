@@ -10,7 +10,7 @@ import (
 )
 
 var AesCmd = &cmd.Command{
-	Name:  "gen-aes",
+	Name:  "aes-keygen",
 	Run:   runAes,
 	Brief: "Generate AES key",
 

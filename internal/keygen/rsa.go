@@ -13,7 +13,7 @@ import (
 )
 
 var RsaCmd = &cmd.Command{
-	Name:  "gen-rsa",
+	Name:  "rsa-keygen",
 	Run:   runRsa,
 	Brief: "Generate RSA key",
 
