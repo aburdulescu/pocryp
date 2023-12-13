@@ -1,5 +1,5 @@
-* todo [4/5]
-** TODO add some sort of abstraction for adding subcommands
+* todo [5/5]
+** DONE add some sort of abstraction for adding subcommands
 ** DONE add -bin wherever needed
 ** DONE use FileOrHex
 ** DONE use stdfile everywhere
