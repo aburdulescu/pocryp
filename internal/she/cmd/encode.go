@@ -25,7 +25,10 @@ If no argument given, stdin will be read.
 func runEncode(cmd *cmd.Command) error {
 	oneLine := cmd.Flags.Bool("l", false, "Print everything on one line")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

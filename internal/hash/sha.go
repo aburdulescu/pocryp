@@ -30,7 +30,10 @@ func runSha(cmd *cmd.Command) error {
 	fAlg := cmd.Flags.String("alg", "", fmt.Sprintf("SHA algorithm to use; one of: %s.", common.SHAAlgs))
 	fBin := cmd.Flags.Bool("bin", false, "Write output as binary not hex.")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

@@ -27,7 +27,10 @@ func runPriv2Pub(cmd *cmd.Command) error {
 	fOutput := cmd.Flags.String("out", "", "Write the result to the file at path OUTPUT.")
 	fInput := cmd.Flags.String("in", "", "Read data from the file at path INPUT.")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

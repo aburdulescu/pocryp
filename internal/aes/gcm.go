@@ -38,7 +38,10 @@ func runGcm(cmd *cmd.Command) error {
 	fAAD := cmd.Flags.String("aad", "", "File which contains additional associated data as binary/text.")
 	fBin := cmd.Flags.Bool("bin", false, "Print output in binary form not hex.")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

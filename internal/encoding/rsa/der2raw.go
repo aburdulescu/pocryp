@@ -26,7 +26,10 @@ func runDer2Raw(cmd *cmd.Command) error {
 	fPriv := cmd.Flags.Bool("priv", false, "Encode PrivateKey from given input.")
 	fPub := cmd.Flags.Bool("pub", false, "Encode PublicKey from given input.")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

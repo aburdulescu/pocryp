@@ -33,7 +33,10 @@ func runCmacGenerate(cmd *cmd.Command) error {
 	fKeyFile := cmd.Flags.String("key-file", "", "File which contains the key as binary/text.")
 	fBin := cmd.Flags.Bool("bin", false, "Print output in binary form not hex.")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 
@@ -85,7 +88,10 @@ func runCmacVerify(cmd *cmd.Command) error {
 	fKey := cmd.Flags.String("key", "", "Key as hex.")
 	fKeyFile := cmd.Flags.String("key-file", "", "File which contains the key as binary/text.")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

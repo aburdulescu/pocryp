@@ -27,7 +27,10 @@ If no argument given, stdin will be read.
 func runDecode(cmd *cmd.Command) error {
 	keyHex := cmd.Flags.String("key", "", "Secret key as hex")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

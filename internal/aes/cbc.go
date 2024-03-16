@@ -36,7 +36,10 @@ func runCbc(cmd *cmd.Command) error {
 	fIV := cmd.Flags.String("iv", "", "IV as hex.")
 	fBin := cmd.Flags.Bool("bin", false, "Print output in binary form not hex.")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

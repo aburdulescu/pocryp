@@ -27,7 +27,10 @@ func runPem2Der(cmd *cmd.Command) error {
 	fInput := cmd.Flags.String("in", "", "Read data from the file at path INPUT.")
 	fBin := cmd.Flags.Bool("bin", false, "Write output as binary not hex.")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

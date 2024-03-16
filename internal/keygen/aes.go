@@ -27,7 +27,10 @@ func runAes(cmd *cmd.Command) error {
 	fOutput := cmd.Flags.String("out", "", "Write the result to the file at path OUTPUT.")
 	fBin := cmd.Flags.Bool("bin", false, "Write output as binary not hex.")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

@@ -31,7 +31,10 @@ func runRaw2Der(cmd *cmd.Command) error {
 	fPrime1 := cmd.Flags.String("p", "", "First prime number as hex string")
 	fPrime2 := cmd.Flags.String("q", "", "Second prime number as hex string")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

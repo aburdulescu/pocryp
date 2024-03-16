@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"errors"
+	"flag"
 	"testing"
 )
 
@@ -16,15 +18,34 @@ func TestParse(t *testing.T) {
 
 	t.Run("Err", func(t *testing.T) {
 		c.Args = []string{"-foo"}
-		if err := c.Parse(); err == nil {
+		isHelp, err := c.Parse()
+		if err == nil {
 			t.Fatal("expected error")
+		}
+		if isHelp {
+			t.Fatal("did not expect help")
+		}
+	})
+
+	t.Run("Help", func(t *testing.T) {
+		c.Args = []string{"-h"}
+		isHelp, err := c.Parse()
+		if !errors.Is(err, flag.ErrHelp) {
+			t.Fatal("unexpected error:", err)
+		}
+		if !isHelp {
+			t.Fatal("expected help")
 		}
 	})
 
 	t.Run("Ok", func(t *testing.T) {
 		c.Args = []string{"foo", "bar"}
-		if err := c.Parse(); err != nil {
+		isHelp, err := c.Parse()
+		if err != nil {
 			t.Fatal(err)
+		}
+		if isHelp {
+			t.Fatal("did not expect help")
 		}
 	})
 }

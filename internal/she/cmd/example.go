@@ -20,7 +20,10 @@ Print example JSON input to stdout.
 }
 
 func runExample(cmd *cmd.Command) error {
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

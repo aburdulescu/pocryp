@@ -29,7 +29,10 @@ If -out is not specified, the output will be printed to stdout.
 func runRsa(cmd *cmd.Command) error {
 	fOutput := cmd.Flags.String("out", "", "Write the result to the file at path OUTPUT.")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 

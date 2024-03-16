@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -47,7 +48,10 @@ func (a *App) Run(args ...string) error {
 	fset.Usage = a.Usage
 	fset.BoolVar(&a.printVersion, "version", false, "")
 	if err := fset.Parse(args); err != nil {
-		return err
+		if !errors.Is(err, flag.ErrHelp) {
+			return err
+		}
+		return nil
 	}
 
 	args = fset.Args()

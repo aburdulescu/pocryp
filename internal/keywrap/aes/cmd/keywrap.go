@@ -32,7 +32,10 @@ func run(cmd *cmd.Command) error {
 	fKeyFile := cmd.Flags.String("key-file", "", "File which contains the key as binary/text.")
 	fBin := cmd.Flags.Bool("bin", false, "Print output in binary form not hex.")
 
-	if err := cmd.Parse(); err != nil {
+	if isHelp, err := cmd.Parse(); err != nil {
+		if isHelp {
+			return nil
+		}
 		return err
 	}
 
