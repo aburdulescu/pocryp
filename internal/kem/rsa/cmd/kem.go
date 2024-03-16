@@ -20,7 +20,7 @@ var Cmd = &cmd.Command{
 	Run:   run,
 	Brief: "Encapsulate/Decapsulate using RSA-KEM",
 
-	Usage: `Usage: pocryp kem-rsa [-bin] [-e/-d] -key [-in INPUT] [-out OUTPUT]
+	Usage: `Usage: pocryp rsa-kem [-bin] [-e/-d] -key [-in INPUT] [-out OUTPUT]
 
 Encapsulate/Decapsulate INPUT to OUTPUT using RSA-KEM.
 

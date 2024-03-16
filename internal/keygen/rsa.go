@@ -17,7 +17,7 @@ var RsaCmd = &cmd.Command{
 	Run:   runRsa,
 	Brief: "Generate RSA key",
 
-	Usage: `Usage: pocryp gen-rsa [-out OUTPUT] NUM_BITS
+	Usage: `Usage: pocryp rsa-keygen [-out OUTPUT] NUM_BITS
 
 Generate RSA key.
 Valid NUM_BITS: 2048, 3072, 4096.

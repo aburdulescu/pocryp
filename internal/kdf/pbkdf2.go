@@ -16,7 +16,7 @@ var Pbkdf2Cmd = &cmd.Command{
 	Run:   runPbkdf2,
 	Brief: "Derive key using PBKDF2",
 
-	Usage: `Usage: pocryp kdf-pbkdf2 [-bin] -key|-key-file -salt|-salt-file -iter -len -hash [-out OUTPUT]
+	Usage: `Usage: pocryp pbkdf2 [-bin] -key|-key-file -salt|-salt-file -iter -len -hash [-out OUTPUT]
 
 Derive a new key from the given key using PBKDF2.
 

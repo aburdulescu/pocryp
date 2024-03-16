@@ -12,7 +12,7 @@ var Ed25519Cmd = &cmd.Command{
 	Run:   runEd25519,
 	Brief: "Generate ED25519 key",
 
-	Usage: `Usage: pocryp gen-ed25519 [-out OUTPUT] [-bin]
+	Usage: `Usage: pocryp ed25519-keygen [-out OUTPUT] [-bin]
 
 Generate ED25519 key.
 

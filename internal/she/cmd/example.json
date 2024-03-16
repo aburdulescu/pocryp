@@ -1,0 +1,15 @@
+{
+  "UID": "000000000000000000000000000001",
+  "AuthID": 1,
+  "AuthKey": "000102030405060708090a0b0c0d0e0f",
+  "ID": 4,
+  "NewKey": "0f0e0d0c0b0a09080706050403020100",
+  "Counter": 1,
+  "Flags": {
+    "Write": false,
+    "Boot": false,
+    "Debugger": false,
+    "KeyUsage": false,
+    "Wildcard": false
+  }
+}

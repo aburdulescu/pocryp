@@ -15,7 +15,7 @@ var ShaCmd = &cmd.Command{
 	Run:   runSha,
 	Brief: "Generate cryptographic hash using SHA",
 
-	Usage: `Usage: pocryp hash-sha -alg [-bin] [-in INPUT] [-out OUTPUT]
+	Usage: `Usage: pocryp sha -alg [-bin] [-in INPUT] [-out OUTPUT]
 
 Compute SHA digest of INPUT to OUTPUT.
 

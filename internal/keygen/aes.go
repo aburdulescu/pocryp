@@ -14,7 +14,7 @@ var AesCmd = &cmd.Command{
 	Run:   runAes,
 	Brief: "Generate AES key",
 
-	Usage: `Usage: pocryp gen-aes [-out OUTPUT] [-bin] NUM_BITS
+	Usage: `Usage: pocryp aes-keygen [-out OUTPUT] [-bin] NUM_BITS
 
 Generate AES key.
 Valid NUM_BITS: 128, 192, 256.
