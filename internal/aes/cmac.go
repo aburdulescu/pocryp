@@ -1,15 +1,13 @@
 package aes
 
 import (
-	"crypto/aes"
 	"encoding/hex"
 	"fmt"
 
+	"bandr.me/p/pocryp/internal/aes/cmac"
 	"bandr.me/p/pocryp/internal/cli/cmd"
 	"bandr.me/p/pocryp/internal/util"
 	"bandr.me/p/pocryp/internal/util/stdfile"
-
-	"github.com/aead/cmac"
 )
 
 var CmacGenerateCmd = &cmd.Command{
@@ -56,12 +54,7 @@ func runCmacGenerate(cmd *cmd.Command) error {
 		return err
 	}
 
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return err
-	}
-
-	output, err := cmac.Sum(input, block, 16)
+	output, err := cmac.Generate(key, input)
 	if err != nil {
 		return err
 	}
@@ -119,12 +112,7 @@ func runCmacVerify(cmd *cmd.Command) error {
 		return err
 	}
 
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return err
-	}
-
-	valid := cmac.Verify(mac, input, block, 16)
+	valid := cmac.Verify(key, input, mac)
 	if !valid {
 		return fmt.Errorf("not valid")
 	}
