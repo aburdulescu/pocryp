@@ -23,12 +23,12 @@ func main() {
 		"Key Generation",
 		keygen.AesCmd,
 		keygen.RsaCmd,
+		keygen.RsaGetPubCmd,
 		keygen.Ed25519Cmd,
 	)
 
 	a.Add(
 		"Key Encoding",
-		encoding_rsa.Priv2PubCmd,
 		encoding_rsa.Raw2DerCmd,
 		encoding_rsa.Der2RawCmd,
 		encoding_rsa.Pem2DerCmd,

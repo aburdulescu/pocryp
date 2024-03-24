@@ -1,4 +1,4 @@
-package rsa
+package keygen
 
 import (
 	"crypto/x509"
@@ -9,12 +9,12 @@ import (
 	"bandr.me/p/pocryp/internal/util/stdfile"
 )
 
-var Priv2PubCmd = &cmd.Command{
-	Name:  "rsa-priv2pub",
-	Run:   runPriv2Pub,
+var RsaGetPubCmd = &cmd.Command{
+	Name:  "rsa-getpub",
+	Run:   runRsaGetPub,
 	Brief: "Extract RSA public key from private key",
 
-	Usage: `Usage: pocryp rsa-priv2pub [-in INPUT] [-out OUTPUT]
+	Usage: `Usage: pocryp rsa-getpub [-in INPUT] [-out OUTPUT]
 
 Extract RSA public key from private key, specified as PEM.
 
@@ -23,7 +23,7 @@ If -out is not specified, the output will be printed to stdout.
 `,
 }
 
-func runPriv2Pub(cmd *cmd.Command) error {
+func runRsaGetPub(cmd *cmd.Command) error {
 	fOutput := cmd.Flags.String("out", "", "Write the result to the file at path OUTPUT.")
 	fInput := cmd.Flags.String("in", "", "Read data from the file at path INPUT.")
 
