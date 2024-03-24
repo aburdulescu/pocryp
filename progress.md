@@ -64,6 +64,7 @@
 # Digital Signature
 
 - [x] ED25519
+- [ ] ED25519ph?
 
 # Key Agreement
 
