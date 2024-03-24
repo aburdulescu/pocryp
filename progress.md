@@ -3,6 +3,8 @@
 - [x] AES
 - [x] RSA
 - [x] ED25519
+- [ ] X25519
+- [ ] secp256r1
 
 # Block Cipher
 
@@ -65,7 +67,9 @@
 
 - [x] ED25519
 - [ ] ED25519ph?
+- [ ] secp256r1
 
 # Key Agreement
 
-- [ ] CURVE25519
+- [ ] x25519
+- [ ] secp256r1
