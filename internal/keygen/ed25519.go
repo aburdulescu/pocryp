@@ -42,5 +42,5 @@ func runEd25519(cmd *cmd.Command) error {
 		return err
 	}
 
-	return sf.Write(key, *fBin)
+	return sf.WriteHexOrBin(key, *fBin)
 }

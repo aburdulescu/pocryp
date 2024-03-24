@@ -50,5 +50,5 @@ func runPem2Der(cmd *cmd.Command) error {
 		return errors.New("failed to parse PEM block")
 	}
 
-	return sf.Write(block.Bytes, *fBin)
+	return sf.WriteHexOrBin(block.Bytes, *fBin)
 }

@@ -72,5 +72,5 @@ func runPbkdf2(cmd *cmd.Command) error {
 
 	output := pbkdf2.Key(key, salt, *fIter, *fLen, hashFunc)
 
-	return sf.Write(output, *fBin)
+	return sf.WriteHexOrBin(output, *fBin)
 }

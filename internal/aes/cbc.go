@@ -84,7 +84,7 @@ func runCbc(cmd *cmd.Command) error {
 
 	output := cbcProcessBlocks(c, input)
 
-	return sf.Write(output, *fBin)
+	return sf.WriteHexOrBin(output, *fBin)
 }
 
 func newCBCEncrypter(key, iv []byte) (cipher.BlockMode, error) {

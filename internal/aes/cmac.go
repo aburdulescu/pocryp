@@ -59,7 +59,7 @@ func runCmacGenerate(cmd *cmd.Command) error {
 		return err
 	}
 
-	return sf.Write(output, *fBin)
+	return sf.WriteHexOrBin(output, *fBin)
 }
 
 var CmacVerifyCmd = &cmd.Command{

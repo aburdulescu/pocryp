@@ -62,5 +62,5 @@ func runSha(cmd *cmd.Command) error {
 
 	digest := h.Sum(nil)
 
-	return sf.Write(digest, *fBin)
+	return sf.WriteHexOrBin(digest, *fBin)
 }

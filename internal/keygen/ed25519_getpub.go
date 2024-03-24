@@ -51,5 +51,5 @@ func runEd25519GetPub(cmd *cmd.Command) error {
 		panic("could not convert to ed25519.PublicKey")
 	}
 
-	return sf.Write(pub, *fBin)
+	return sf.WriteHexOrBin(pub, *fBin)
 }

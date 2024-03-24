@@ -13,6 +13,7 @@ import (
 	encoding_rsa "bandr.me/p/pocryp/internal/encoding/rsa"
 	kem_rsa "bandr.me/p/pocryp/internal/kem/rsa/cmd"
 	keywrap_aes "bandr.me/p/pocryp/internal/keywrap/aes/cmd"
+	"bandr.me/p/pocryp/internal/misc"
 	she "bandr.me/p/pocryp/internal/she/cmd"
 )
 
@@ -82,6 +83,11 @@ func main() {
 		she.ExampleCmd,
 		she.EncodeCmd,
 		she.DecodeCmd,
+	)
+
+	a.Add(
+		"Miscellaneous",
+		misc.Base64Cmd,
 	)
 
 	if err := a.Run(os.Args[1:]...); err != nil {

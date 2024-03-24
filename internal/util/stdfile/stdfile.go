@@ -68,13 +68,12 @@ func (f *StdFile) Read() ([]byte, error) {
 	return input.Bytes(), nil
 }
 
-func (f *StdFile) Write(b []byte, bin bool) error {
+func (f *StdFile) WriteHexOrBin(b []byte, bin bool) error {
+	var err error
 	if bin {
-		if _, err := f.Out.Write(b); err != nil {
-			return err
-		}
+		_, err = f.Out.Write(b)
 	} else {
-		fmt.Fprintln(f.Out, hex.EncodeToString(b))
+		_, err = fmt.Fprintln(f.Out, hex.EncodeToString(b))
 	}
-	return nil
+	return err
 }

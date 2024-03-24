@@ -69,7 +69,7 @@ func runEcb(cmd *cmd.Command) error {
 		return err
 	}
 
-	return sf.Write(output, *fBin)
+	return sf.WriteHexOrBin(output, *fBin)
 }
 
 func ecb(key, in []byte, direction bool) ([]byte, error) {
