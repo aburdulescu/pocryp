@@ -25,6 +25,7 @@ func main() {
 		keygen.RsaCmd,
 		keygen.RsaGetPubCmd,
 		keygen.Ed25519Cmd,
+		keygen.Ed25519GetPubCmd,
 	)
 
 	a.Add(
