@@ -56,7 +56,7 @@ func runBase64(cmd *cmd.Command) error {
 		output = base64.StdEncoding.EncodeToString(input)
 	}
 
-	fmt.Fprintln(sf.Out, output)
+	fmt.Fprint(sf.Out, output)
 
 	return nil
 }
