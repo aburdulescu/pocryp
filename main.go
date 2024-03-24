@@ -88,6 +88,7 @@ func main() {
 	a.Add(
 		"Miscellaneous",
 		misc.Base64Cmd,
+		misc.HexCmd,
 	)
 
 	if err := a.Run(os.Args[1:]...); err != nil {
