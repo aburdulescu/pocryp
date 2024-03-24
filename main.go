@@ -10,6 +10,7 @@ import (
 	"bandr.me/p/pocryp/internal/kdf"
 	"bandr.me/p/pocryp/internal/keygen"
 
+	"bandr.me/p/pocryp/internal/dsa"
 	encoding_rsa "bandr.me/p/pocryp/internal/encoding/rsa"
 	kem_rsa "bandr.me/p/pocryp/internal/kem/rsa/cmd"
 	keywrap_aes "bandr.me/p/pocryp/internal/keywrap/aes/cmd"
@@ -71,6 +72,12 @@ func main() {
 	a.Add(
 		"Hash Function",
 		hash.ShaCmd,
+	)
+
+	a.Add(
+		"Digital Signature",
+		dsa.Ed25519SignCmd,
+		dsa.Ed25519VerifyCmd,
 	)
 
 	a.Add(
