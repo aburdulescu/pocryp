@@ -34,6 +34,10 @@ func runDecode(cmd *cmd.Command) error {
 		return err
 	}
 
+	if *keyHex == "" {
+		return fmt.Errorf("secret key(-key) not specified")
+	}
+
 	input := cmd.Flags.Arg(0)
 	if cmd.Flags.NArg() == 0 {
 		data, err := io.ReadAll(os.Stdin)
