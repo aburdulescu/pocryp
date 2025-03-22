@@ -18,7 +18,7 @@ var GcmCmd = &cmd.Command{
 	Run:   runGcm,
 	Brief: "Encrypt/Decrypt using AES-GCM",
 
-	Usage: `Usage: pocryp aes-gcm [-bin] [-e/-d] -key|-key-file -iv -aad [-in INPUT] [-out OUTPUT]
+	Usage: `Usage: pocryp aes-gcm [-bin] [-e/-d] -key|-key-file -iv [-aad] [-in INPUT] [-out OUTPUT]
 
 Encrypt/Decrypt INPUT to OUTPUT using AES-GCM.
 
