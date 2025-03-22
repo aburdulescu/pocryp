@@ -15,6 +15,7 @@ import (
 	kem_rsa "bandr.me/p/pocryp/internal/kem/rsa/cmd"
 	keywrap_aes "bandr.me/p/pocryp/internal/keywrap/aes/cmd"
 	"bandr.me/p/pocryp/internal/misc"
+	padding_pkcs7 "bandr.me/p/pocryp/internal/padding/pkcs7/cmd"
 	she "bandr.me/p/pocryp/internal/she/cmd"
 )
 
@@ -90,6 +91,11 @@ func main() {
 		she.ExampleCmd,
 		she.EncodeCmd,
 		she.DecodeCmd,
+	)
+
+	a.Add(
+		"Padding",
+		padding_pkcs7.Cmd,
 	)
 
 	a.Add(

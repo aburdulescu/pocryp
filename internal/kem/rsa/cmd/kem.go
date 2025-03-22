@@ -111,11 +111,23 @@ func run(cmd *cmd.Command) error {
 	var output []byte
 	switch {
 	case *fEncapsulate:
-		output, err = kemrsa.Encapsulate(key.(*rsa.PublicKey), input, kdfParams)
+		pubKey, ok := key.(*rsa.PublicKey)
+		if !ok {
+			return fmt.Errorf("rsa.PublicKey type assertion failed")
+		}
+		output, err = kemrsa.Encapsulate(pubKey, input, kdfParams)
 	case *fDecapsulate:
-		output, err = kemrsa.Decapsulate(key.(*rsa.PrivateKey), input, kdfParams)
+		privKey, ok := key.(*rsa.PrivateKey)
+		if !ok {
+			return fmt.Errorf("rsa.PrivateKey type assertion failed")
+		}
+		output, err = kemrsa.Decapsulate(privKey, input, kdfParams)
 	default:
-		output, err = kemrsa.Encapsulate(key.(*rsa.PublicKey), input, kdfParams)
+		pubKey, ok := key.(*rsa.PublicKey)
+		if !ok {
+			return fmt.Errorf("rsa.PublicKey type assertion failed")
+		}
+		output, err = kemrsa.Encapsulate(pubKey, input, kdfParams)
 	}
 	if err != nil {
 		return err
