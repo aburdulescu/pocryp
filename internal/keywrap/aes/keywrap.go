@@ -54,6 +54,8 @@ func Wrap(kek, plaintext []byte) ([]byte, error) {
 			// B = AES(K, A | R[i])
 			block.Encrypt(B, B)
 
+			// overflow not possible for int->uint64 conversion
+			//nolint:gosec
 			t := uint64((n * j) + i)
 			msbB := binary.BigEndian.Uint64(B[:blkSize])
 
@@ -110,6 +112,9 @@ func Unwrap(kek, ciphertext []byte) ([]byte, error) {
 	// 2) Compute intermediate values.
 	for j := 5; j >= 0; j-- {
 		for i := n; i >= 1; i-- {
+
+			// overflow not possible for int->uint64 conversion
+			//nolint:gosec
 			t := uint64((n * j) + i)
 			binary.BigEndian.PutUint64(T, t)
 
